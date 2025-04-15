@@ -8,6 +8,9 @@ import babelParser from "@babel/eslint-parser";
 import globals from "globals";
 
 export default [
+  {
+    ignores: ["dist/**"],
+  },
   js.configs.recommended,
   {
     files: ["**/*.{js,jsx}"],
@@ -24,7 +27,11 @@ export default [
           jsx: true,
         },
       },
-      globals: globals.browser,
+      globals: {
+        ...globals.browser,
+        ...globals.webextensions,
+        chrome: "readonly",
+      },
     },
     plugins: {
       react,
