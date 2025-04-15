@@ -1,33 +1,56 @@
-import js from "@eslint/js"
-import globals from "globals"
-import reactHooks from "eslint-plugin-react-hooks"
-import reactRefresh from "eslint-plugin-react-refresh"
+import js from "@eslint/js";
+import importPlugin from "eslint-plugin-import";
+import prettier from "eslint-plugin-prettier";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
+import unusedImports from "eslint-plugin-unused-imports";
+import babelParser from "@babel/eslint-parser";
+import globals from "globals";
 
 export default [
-  { ignores: ["dist"] },
+  js.configs.recommended,
   {
     files: ["**/*.{js,jsx}"],
     languageOptions: {
-      ecmaVersion: 2020,
-      globals: globals.browser,
+      ecmaVersion: "latest",
+      sourceType: "module",
+      parser: babelParser,
       parserOptions: {
-        ecmaVersion: "latest",
-        ecmaFeatures: { jsx: true },
-        sourceType: "module",
+        requireConfigFile: false,
+        babelOptions: {
+          presets: ["@babel/preset-react"],
+        },
+        ecmaFeatures: {
+          jsx: true,
+        },
       },
+      globals: globals.browser,
     },
     plugins: {
+      react,
       "react-hooks": reactHooks,
-      "react-refresh": reactRefresh,
+      import: importPlugin,
+      prettier,
+      "unused-imports": unusedImports,
     },
     rules: {
-      ...js.configs.recommended.rules,
-      ...reactHooks.configs.recommended.rules,
-      "no-unused-vars": ["error", { varsIgnorePattern: "^[A-Z_]" }],
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
+      "no-console": "warn",
+      "no-unused-vars": "warn",
+      "unused-imports/no-unused-imports": "warn",
+      "import/no-extraneous-dependencies": "off",
+      "react/jsx-props-no-spreading": "off",
+      "react/react-in-jsx-scope": "off",
+      "react/button-has-type": "off",
+      "react/jsx-uses-vars": "error",
+      "react/jsx-uses-react": "error",
+      "prefer-arrow-callback": "off",
+      "prettier/prettier": "error",
+      "import/order": "off",
+    },
+    settings: {
+      react: {
+        version: "detect",
+      },
     },
   },
-]
+];
