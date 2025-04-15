@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "description": "마케터와 스타트업 팀을 위한 경쟁사 웹페이지 감시 자동화 도구입니다.",
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "src/popup/index.html"
   },
-  "permissions": []
+  "permissions": ["tabs"],
+  "host_permissions": ["http://*/*", "https://*/*"]
 }
