@@ -2,10 +2,10 @@
   "manifest_version": 3,
   "name": "JANBI",
   "version": "1.0.0",
-  "description": "마케터와 스타트업 팀을 위한 경쟁사 웹페이지 감시 자동화 도구입니다.",
+  "description": "주기적으로 보고싶은 웹 페이지의 URL을 등록하고 알림받아보세요.",
   "action": {
     "default_popup": "src/popup/index.html"
   },
-  "permissions": ["tabs"],
+  "permissions": ["tabs", "scripting"],
   "host_permissions": ["http://*/*", "https://*/*"]
 }
