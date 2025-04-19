@@ -189,6 +189,23 @@ function getXPath(targetElement) {
   return "/" + nodePath.join("/");
 }
 
+function getOptimalSelector(targetElement) {
+  const rootNode = targetElement.getRootNode();
+  const isShadowDom = rootNode && rootNode instanceof ShadowRoot;
+
+  if (isShadowDom) {
+    return {
+      type: "css",
+      selector: getCssSelector(targetElement),
+    };
+  } else {
+    return {
+      type: "xpath",
+      selector: getXPath(targetElement),
+    };
+  }
+}
+
 
 function updateSelectorPanel() {
   let selectorPanel = document.querySelector("#janbi-selector-panel");
