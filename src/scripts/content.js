@@ -77,10 +77,10 @@ styleTag.textContent = `
 
 document.head.appendChild(styleTag);
 
-const panel = document.createElement("div");
+const selectorPanel = document.createElement("div");
 
-panel.id = "janbi-selector-panel";
-document.body.appendChild(panel);
+selectorPanel.id = "janbi-selector-panel";
+document.body.appendChild(selectorPanel);
 
 document.querySelectorAll("*").forEach((targetElement) => {
   targetElement.addEventListener("mouseover", onHover);
@@ -105,20 +105,21 @@ function onClick(ev) {
   ev.stopPropagation();
 
   const targetElement = ev.target;
-  const selector = getSelector(targetElement);
+  const { type, selector } = getOptimalSelector(targetElement);
+  const typedSelectorKey = `${type}:${selector}`;
 
-  if (selectedElements.has(selector)) {
-    selectedElements.delete(selector);
+  if (selectedElements.has(typedSelectorKey)) {
+    selectedElements.delete(typedSelectorKey);
     targetElement.classList.remove("janbi-selected");
   } else {
-    selectedElements.add(selector);
+    selectedElements.add(typedSelectorKey);
     targetElement.classList.add("janbi-selected");
   }
 
   updateSelectorPanel();
 }
 
-function getSelector(targetElement) {
+function getCssSelector(targetElement) {
   if (!targetElement || !targetElement.nodeType === Node.ELEMENT_NODE)
     return null;
 
