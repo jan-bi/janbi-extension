@@ -138,7 +138,7 @@ function getSelector(targetElement) {
     let selector = targetElement.nodeName.toLowerCase();
 
     const filteredClassName = [...targetElement.classList].filter(
-      (className) => !className.startsWith("janbi-")
+      (className) => !className.startsWith("janbi-"),
     );
 
     if (filteredClassName.length > 0) {
@@ -229,33 +229,34 @@ function getElementFromTypedSelector(typedSelector) {
 }
 
 function updateSelectorPanel() {
-  let selectorPanel = document.querySelector("#janbi-selector-panel");
+  selectorPanel.innerHTML = "";
 
-  if (!selectorPanel) {
-    selectorPanel = document.createElement("div");
-    selectorPanel.id = "janbi-selector-panel";
+  const title = document.createElement("h2");
+  title.className = "janbi-title";
+  title.textContent = "JANBI";
 
-    document.body.appendChild(selectorPanel);
-  }
+  const subtitle = document.createElement("h3");
+  subtitle.className = "janbi-subtitle";
+  subtitle.textContent = `선택한 요소 목록 (${selectedElements.size})`;
 
-  const selectorList = [...selectedElements].map(
-    (selector) =>
-      `<li>${selector}<button class="remove" title="삭제" data-selector="${selector}">삭제</button></li>`,
-  );
+  const listContainer = document.createElement("ul");
+  listContainer.className = "janbi-list";
 
-  selectorPanel.innerHTML = `
-    <h2 class="janbi-title">JANBI</h2>
-    <h3 class="janbi-subtitle">선택한 요소 목록 (${selectedElements.size})</h3>
-    <ul class="janbi-list">${selectorList.join("")}</ul>
-  `;
+  [...selectedElements].forEach((typedSelector) => {
+    const [type, selector] = typedSelector.split(":", 2);
 
-  selectorPanel.querySelectorAll("button.remove").forEach((btn) => {
-    btn.addEventListener("click", (ev) => {
-      const selector = ev.target.dataset.selector;
+    const li = document.createElement("li");
+    li.innerHTML = `[${type.toUpperCase()}] ${selector}`;
 
-      selectedElements.delete(selector);
+    const removeBtn = document.createElement("button");
+    removeBtn.className = "remove";
+    removeBtn.textContent = "삭제";
+    removeBtn.dataset.selector = typedSelector;
 
-      const targetElement = document.querySelector(selector);
+    removeBtn.addEventListener("click", () => {
+      selectedElements.delete(typedSelector);
+
+      const targetElement = getElementFromTypedSelector(typedSelector);
 
       if (targetElement) {
         targetElement.classList.remove("janbi-selected");
@@ -263,5 +264,12 @@ function updateSelectorPanel() {
 
       updateSelectorPanel();
     });
+
+    li.appendChild(removeBtn);
+    listContainer.appendChild(li);
   });
+
+  selectorPanel.appendChild(title);
+  selectorPanel.appendChild(subtitle);
+  selectorPanel.appendChild(listContainer);
 }
