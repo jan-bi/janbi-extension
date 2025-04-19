@@ -206,6 +206,27 @@ function getOptimalSelector(targetElement) {
   }
 }
 
+function getElementFromTypedSelector(typedSelector) {
+  const [type, selector] = typedSelector.split(":", 2);
+
+  if (type === "css") {
+    return document.querySelector(selector);
+  }
+
+  if (type === "xpath") {
+    const element = document.evaluate(
+      selector,
+      document,
+      null,
+      XPathResult.FIRST_ORDERED_NODE_TYPE,
+      null,
+    ).singleNodeValue;
+
+    return element;
+  }
+
+  return null;
+}
 
 function updateSelectorPanel() {
   let selectorPanel = document.querySelector("#janbi-selector-panel");
