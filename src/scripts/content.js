@@ -154,6 +154,42 @@ function getSelector(targetElement) {
   return path.join(" > ");
 }
 
+function getXPath(targetElement) {
+  if (!targetElement || targetElement.nodeType !== Node.ELEMENT_NODE) return "";
+
+  if (targetElement.id && !targetElement.id.startsWith("janbi-")) {
+    return `//*[@id="${targetElement.id}"]`;
+  }
+
+  const nodePath = [];
+
+  while (targetElement && targetElement.nodeType === Node.ELEMENT_NODE) {
+    if (targetElement.id && !targetElement.id.startsWith("janbi-")) {
+      nodePath.unshift(`*[@id="${targetElement.id}"]`);
+
+      break;
+    }
+
+    const tag = targetElement.nodeName.toLowerCase();
+    let index = 1;
+    let sibling = targetElement.previousElementSibling;
+
+    while (sibling) {
+      if (sibling.nodeName === targetElement.nodeName) {
+        index++;
+      }
+
+      sibling = sibling.previousElementSibling;
+    }
+
+    nodePath.unshift(`${tag}[${index}]`);
+    targetElement = targetElement.parentElement;
+  }
+
+  return "/" + nodePath.join("/");
+}
+
+
 function updateSelectorPanel() {
   let selectorPanel = document.querySelector("#janbi-selector-panel");
 
