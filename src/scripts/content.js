@@ -273,4 +273,24 @@ function updateSelectorPanel() {
   selectorPanel.appendChild(title);
   selectorPanel.appendChild(subtitle);
   selectorPanel.appendChild(listContainer);
+  selectorPanel.appendChild(saveButton);
+}
+
+const saveButton = document.createElement("button");
+saveButton.textContent = "저장하기";
+saveButton.style.cssText = `
+  position: absolute;
+  top: 14px;
+  right: 20px;
+  padding: 6px 12px;
+  background-color: #2536D2;
+  color: white;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+`;
+saveButton.addEventListener("click", onSaveSelectors);
+selectorPanel.appendChild(saveButton);
+
 }
