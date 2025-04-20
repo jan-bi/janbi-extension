@@ -293,4 +293,49 @@ saveButton.style.cssText = `
 saveButton.addEventListener("click", onSaveSelectors);
 selectorPanel.appendChild(saveButton);
 
+async function onSaveSelectors() {
+  if (selectedElements.size === 0) {
+    alert("선택한 요소가 없습니다.");
+
+    return;
+  }
+
+  const name = prompt("이 URL의 이름을 입력해주세요:");
+  if (!name) return;
+
+  showScheduleSelector(async (dayOfWeek, scheduleTime) => {
+    const urlData = {
+      name,
+      url: location.href,
+      dayOfWeek,
+      scheduleTime,
+      selectors: [...selectedElements],
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/urls", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(urlData),
+      });
+
+      const savedResult = await res.json();
+
+      if (savedResult?.data) {
+        alert("요소가 성공적으로 저장되었습니다");
+
+        selectedElements.clear();
+        document
+          .querySelectorAll(".janbi-selected")
+          .forEach((el) => el.classList.remove("janbi-selected"));
+        updateSelectorPanel();
+      } else {
+        alert("저장 실패: " + savedResult.message);
+      }
+    } catch {
+      alert("서버에 오류가 발생했습니다.");
+    }
+  });
+}
+
 }
