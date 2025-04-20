@@ -317,7 +317,11 @@ async function onSaveSelectors() {
       url: location.href,
       dayOfWeek,
       scheduleTime,
-      selectors: [...selectedElements],
+      selectors: [...selectedElements].map((typedSelector) => {
+        const [type, selector] = typedSelector.split(":", 2);
+
+        return { type, selector };
+      }),
     };
 
     try {
