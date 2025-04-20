@@ -13,18 +13,7 @@ export default function App() {
       currentWindow: true,
     });
 
-    const useCurrentPage = confirm(
-      "현재 보고 있는 페이지에서 요소를 선택할까요?",
-    );
-
-    if (!useCurrentPage) {
-      const url = prompt("추적할 URL을 입력하거나 해당 페이지로 이동하세요.");
-      if (url) {
-        return chrome.tabs.update(tab.id, { url });
-      } else {
-        return;
-      }
-    }
+    confirm("현재 보고 있는 페이지에서 모니터링할 요소 선택을 시작합니다.");
 
     chrome.scripting.executeScript({
       target: { tabId: tab.id },
