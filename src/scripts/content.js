@@ -61,6 +61,7 @@ styleTag.textContent = `
   }
 
   #janbi-selector-panel button.remove {
+    width: 3rem;
     margin-left: 12px;
     color: #ef4444;
     background: none;
