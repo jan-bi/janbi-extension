@@ -1,3 +1,5 @@
+import { API_BASE_URL, SLACK_CLIENT_ID, REDIRECT_URI } from "../../env";
+
 const selectedElements = new Set();
 
 const styleTag = document.createElement("style");
@@ -299,6 +301,7 @@ saveButton.style.cssText = `
   border-radius: 4px;
   cursor: pointer;
 `;
+
 saveButton.addEventListener("click", onSaveSelectors);
 selectorPanel.appendChild(saveButton);
 
@@ -326,7 +329,7 @@ async function onSaveSelectors() {
     };
 
     try {
-      const res = await fetch("http://localhost:3000/urls", {
+      const res = await fetch(`${API_BASE_URL}/urls`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(urlData),
@@ -335,7 +338,15 @@ async function onSaveSelectors() {
       const savedResult = await res.json();
 
       if (savedResult?.data) {
-        alert("요소가 성공적으로 저장되었습니다");
+        const urlId = savedResult.data._id;
+
+        alert(
+          "모니터링 할 요소가 성공적으로 저장되었습니다. 알림 받을 슬랙 채널을 설정해주세요.",
+        );
+
+        const slackAuthUrl = `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=chat:write,incoming-webhook&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${urlId}`;
+
+        window.open(slackAuthUrl, "_blank", "width=600,height=800");
 
         selectedElements.clear();
         document
