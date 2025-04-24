@@ -1,4 +1,4 @@
-import { API_BASE_URL, SLACK_CLIENT_ID, REDIRECT_URI } from "../../env";
+import { API_BASE_URL, SLACK_CLIENT_ID, REDIRECT_URI } from "../../env.js";
 
 const selectedElements = new Set();
 
@@ -117,13 +117,18 @@ function onClick(ev) {
 
   const targetElement = ev.target;
   const { type, selector } = getOptimalSelector(targetElement);
-  const typedSelectorKey = `${type}:${selector}`;
+  const content = extractElementValue(targetElement);
 
-  if (selectedElements.has(typedSelectorKey)) {
-    selectedElements.delete(typedSelectorKey);
+  const typedSelectorKey = `${type}:${selector}`;
+  const found = [...selectedElements].find(
+    (el) => `${el.type}:${el.selector}` === typedSelectorKey,
+  );
+
+  if (found) {
+    selectedElements.delete(found);
     targetElement.classList.remove("janbi-selected");
   } else {
-    selectedElements.add(typedSelectorKey);
+    selectedElements.add({ type, selector, content });
     targetElement.classList.add("janbi-selected");
   }
 
@@ -261,9 +266,7 @@ function updateSelectorPanel() {
   const listContainer = document.createElement("ul");
   listContainer.className = "janbi-list";
 
-  [...selectedElements].forEach((typedSelector) => {
-    const [type, selector] = typedSelector.split(":", 2);
-
+  [...selectedElements].forEach(({ type, selector, content }) => {
     const li = document.createElement("li");
 
     li.innerHTML = `
@@ -278,16 +281,16 @@ function updateSelectorPanel() {
     const removeBtn = document.createElement("button");
     removeBtn.className = "remove";
     removeBtn.textContent = "삭제";
-    removeBtn.dataset.selector = typedSelector;
 
     removeBtn.addEventListener("click", () => {
-      selectedElements.delete(typedSelector);
+      selectedElements.delete(
+        [...selectedElements].find(
+          (el) => el.type === type && el.selector === selector,
+        ),
+      );
 
-      const targetElement = getElementFromTypedSelector(typedSelector);
-
-      if (targetElement) {
-        targetElement.classList.remove("janbi-selected");
-      }
+      const targetElement = getElementFromTypedSelector(`${type}:${selector}`);
+      if (targetElement) targetElement.classList.remove("janbi-selected");
 
       updateSelectorPanel();
     });
@@ -336,11 +339,11 @@ async function onSaveSelectors() {
       url: location.href,
       dayOfWeek,
       scheduleTime,
-      selectors: [...selectedElements].map((typedSelector) => {
-        const [type, selector] = typedSelector.split(":", 2);
-
-        return { type, selector };
-      }),
+      selectors: [...selectedElements].map(({ type, selector, content }) => ({
+        type,
+        selector,
+        content,
+      })),
     };
 
     try {
