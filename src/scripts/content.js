@@ -265,7 +265,15 @@ function updateSelectorPanel() {
     const [type, selector] = typedSelector.split(":", 2);
 
     const li = document.createElement("li");
-    li.innerHTML = `[${type.toUpperCase()}] ${selector}`;
+
+    li.innerHTML = `
+      <div style="flex: 1;">
+        <div><strong>[${type.toUpperCase()}]</strong> ${selector}</div>
+        <div style="margin-top: 4px; font-size: 12px; color: #6b7280;">
+          <strong>내용:</strong> ${content}
+        </div>
+      </div>
+    `;
 
     const removeBtn = document.createElement("button");
     removeBtn.className = "remove";
