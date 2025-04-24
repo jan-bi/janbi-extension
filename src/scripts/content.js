@@ -240,6 +240,13 @@ function getElementFromTypedSelector(typedSelector) {
   return null;
 }
 
+function extractElementValue(el) {
+  if (!el) return "<비어있음>";
+  if (el.tagName?.toUpperCase() === "IMG") return el.src;
+
+  return el.textContent?.trim() || "<비어있음>";
+}
+
 function updateSelectorPanel() {
   selectorPanel.innerHTML = "";
 
