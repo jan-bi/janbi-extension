@@ -271,7 +271,6 @@ function updateSelectorPanel() {
 
     li.innerHTML = `
       <div style="flex: 1;">
-        <div><strong>[${type.toUpperCase()}]</strong> ${selector}</div>
         <div style="margin-top: 4px; font-size: 12px; color: #6b7280;">
           <strong>내용:</strong> ${content}
         </div>
