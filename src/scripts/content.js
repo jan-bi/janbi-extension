@@ -17,17 +17,18 @@ styleTag.textContent = `
 
   #janbi-selector-panel {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    top: 100px;
+    right: 20px;
+    width: 360px;
     background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
+    border: 1px solid #e5e7eb;
     padding: 14px 20px;
     font-size: 14px;
     z-index: 999999;
-    max-height: 180px;
+    max-height: 60vh;
     overflow-y: auto;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
   }
 
   #janbi-selector-panel .janbi-title {
