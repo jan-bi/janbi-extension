@@ -400,50 +400,53 @@ function showScheduleSelector(onSelect) {
     width: 300px;
   `;
 
+  const dayOptions = ["월", "화", "수", "목", "금", "토", "일"]
+    .map((day) => `<option value="${day}">${day}</option>`)
+    .join("");
+
+  const hourOptions = Array.from({ length: 24 }, (_, i) => {
+    const hour = String(i).padStart(2, "0");
+    return `<option value="${hour}">${hour}</option>`;
+  }).join("");
+
   schedulePopup.innerHTML = `
-    <h3 style="margin-bottom: 10px; font-weight: bold; color: #2536D2;">알림 주기 설정</h3>
-    <label style="margin-right: 8px;">요일:
-      <select id="janbi-day">
-        ${["월", "화", "수", "목", "금", "토", "일"]
-          .map((day) => `<option value="${day}">${day}</option>`)
-          .join("")}
-      </select>
-    </label>
-    <label style="margin-right: 8px;">시:
-      <select id="janbi-hour">
-        ${Array.from(
-          { length: 24 },
-          (_, i) =>
-            `<option value="${String(i).padStart(2, "0")}">${String(i).padStart(2, "0")}</option>`,
-        ).join("")}
-      </select>
-    </label>
-    <label>분:
-      <select id="janbi-minute" style="margin-left: 4px;">
-        <option value="00">00</option>
-        <option value="30">30</option>
-      </select>
-    </label>
-    <div style="text-align: right; margin-top: 16px;">
-      <button id="janbi-cancel" style="
-        background: #e5e7eb;
-        color: #374151;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 4px;
-        margin-right: 8px;
-        cursor: pointer;
-      ">취소</button>
-      <button id="janbi-confirm" style="
-        background: #2536D2;
-        color: white;
-        border: none;
-        padding: 6px 12px;
-        border-radius: 4px;
-        cursor: pointer;
-      ">확인</button>
-    </div>
-  `;
+  <h3 style="margin-bottom: 10px; font-weight: bold; color: #2536D2;">알림 주기 설정</h3>
+  <label style="margin-right: 8px;">요일:
+    <select id="janbi-day">
+      ${dayOptions}
+    </select>
+  </label>
+  <label style="margin-right: 8px;">시:
+    <select id="janbi-hour">
+      ${hourOptions}
+    </select>
+  </label>
+  <label>분:
+    <select id="janbi-minute" style="margin-left: 4px;">
+      <option value="00">00</option>
+      <option value="30">30</option>
+    </select>
+  </label>
+  <div style="text-align: right; margin-top: 16px;">
+    <button id="janbi-cancel" style="
+      background: #e5e7eb;
+      color: #374151;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      margin-right: 8px;
+      cursor: pointer;
+    ">취소</button>
+    <button id="janbi-confirm" style="
+      background: #2536D2;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    ">확인</button>
+  </div>
+`;
 
   document.body.appendChild(schedulePopup);
 
