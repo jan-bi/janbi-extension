@@ -8,49 +8,50 @@ JANBI는 '잔업비서'의 줄임말로 경쟁사 웹 페이지의 특정 요소
 
 - [🔥 Motivation](#%F0%9F%94%A5-motivation)
 - [💻 Development](#%F0%9F%92%BB-development)
-  - [1. 왜 익스텐션이어야 했을까?](#1-%EC%99%9C-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%B4%EC%96%B4%EC%95%BC-%ED%96%88%EC%9D%84%EA%B9%8C)
-    - [1.1 팝업으로는 외부 페이지의 DOM에 접근할 수 없습니다.](#11-%ED%8C%9D%EC%97%85%EC%9C%BC%EB%A1%9C%EB%8A%94-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9D%98-dom%EC%97%90-%EC%A0%91%EA%B7%BC%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [1. 왜 익스텐션이어야 했을까?](#1-%EC%99%9C-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%B4%EC%96%B4%EC%95%BC-%ED%96%88%EC%9D%84%EA%B9%8C)
+    + [1.1 팝업으로는 외부 페이지의 DOM에 접근할 수 없습니다.](#11-%ED%8C%9D%EC%97%85%EC%9C%BC%EB%A1%9C%EB%8A%94-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9D%98-dom%EC%97%90-%EC%A0%91%EA%B7%BC%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [1) 팝업은 별도의 브라우저 컨텍스트입니다.](#1-%ED%8C%9D%EC%97%85%EC%9D%80-%EB%B3%84%EB%8F%84%EC%9D%98-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%BB%A8%ED%85%8D%EC%8A%A4%ED%8A%B8%EC%9E%85%EB%8B%88%EB%8B%A4)
       - [2) 팝업 내부에서 사용자 클릭을 감지하려면 JS 코드 삽입이 필요하지만 대부분 차단됩니다.](#2-%ED%8C%9D%EC%97%85-%EB%82%B4%EB%B6%80%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%81%B4%EB%A6%AD%EC%9D%84-%EA%B0%90%EC%A7%80%ED%95%98%EB%A0%A4%EB%A9%B4-js-%EC%BD%94%EB%93%9C-%EC%82%BD%EC%9E%85%EC%9D%B4-%ED%95%84%EC%9A%94%ED%95%98%EC%A7%80%EB%A7%8C-%EB%8C%80%EB%B6%80%EB%B6%84-%EC%B0%A8%EB%8B%A8%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [1.2 iframe 또한 브라우저 보안 정책으로 인해 대부분의 외부 페이지를 삽입할 수 없습니다.](#12-iframe-%EB%98%90%ED%95%9C-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EB%B3%B4%EC%95%88-%EC%A0%95%EC%B1%85%EC%9C%BC%EB%A1%9C-%EC%9D%B8%ED%95%B4-%EB%8C%80%EB%B6%80%EB%B6%84%EC%9D%98-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%A5%BC-%EC%82%BD%EC%9E%85%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [1.2 iframe 또한 브라우저 보안 정책으로 인해 대부분의 외부 페이지를 삽입할 수 없습니다.](#12-iframe-%EB%98%90%ED%95%9C-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EB%B3%B4%EC%95%88-%EC%A0%95%EC%B1%85%EC%9C%BC%EB%A1%9C-%EC%9D%B8%ED%95%B4-%EB%8C%80%EB%B6%80%EB%B6%84%EC%9D%98-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%A5%BC-%EC%82%BD%EC%9E%85%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
       - [1) iframe 삽입 자체가 차단됩니다.](#1-iframe-%EC%82%BD%EC%9E%85-%EC%9E%90%EC%B2%B4%EA%B0%80-%EC%B0%A8%EB%8B%A8%EB%90%A9%EB%8B%88%EB%8B%A4)
       - [2) 만약 iframe 삽입이 되더라도 DOM 접근은 불가능합니다.](#2-%EB%A7%8C%EC%95%BD-iframe-%EC%82%BD%EC%9E%85%EC%9D%B4-%EB%90%98%EB%8D%94%EB%9D%BC%EB%8F%84-dom-%EC%A0%91%EA%B7%BC%EC%9D%80-%EB%B6%88%EA%B0%80%EB%8A%A5%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [1.3 그래서 Chrome 익스텐션을 선택했습니다.](#13-%EA%B7%B8%EB%9E%98%EC%84%9C-chrome-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [2. 선택된 요소의 텍스트, 이미지 변화를 어떻게 감지할까?](#2-%EC%84%A0%ED%83%9D%EB%90%9C-%EC%9A%94%EC%86%8C%EC%9D%98-%ED%85%8D%EC%8A%A4%ED%8A%B8-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B3%80%ED%99%94%EB%A5%BC-%EC%96%B4%EB%96%BB%EA%B2%8C-%EA%B0%90%EC%A7%80%ED%95%A0%EA%B9%8C)
-    - [2.1 사용자가 선택한 요소는 서버에 저장됩니다.](#21-%EC%82%AC%EC%9A%A9%EC%9E%90%EA%B0%80-%EC%84%A0%ED%83%9D%ED%95%9C-%EC%9A%94%EC%86%8C%EB%8A%94-%EC%84%9C%EB%B2%84%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [2.2 변화 감지는 텍스트와 이미지 주소를 기준으로 합니다.](#22-%EB%B3%80%ED%99%94-%EA%B0%90%EC%A7%80%EB%8A%94-%ED%85%8D%EC%8A%A4%ED%8A%B8%EC%99%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%A3%BC%EC%86%8C%EB%A5%BC-%EA%B8%B0%EC%A4%80%EC%9C%BC%EB%A1%9C-%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [2.3 비교 결과는 변경 여부와 함께 이력에 저장됩니다.](#23-%EB%B9%84%EA%B5%90-%EA%B2%B0%EA%B3%BC%EB%8A%94-%EB%B3%80%EA%B2%BD-%EC%97%AC%EB%B6%80%EC%99%80-%ED%95%A8%EA%BB%98-%EC%9D%B4%EB%A0%A5%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [2.4 의미있는 변화를 추적합니다.](#24-%EC%9D%98%EB%AF%B8%EC%9E%88%EB%8A%94-%EB%B3%80%ED%99%94%EB%A5%BC-%EC%B6%94%EC%A0%81%ED%95%A9%EB%8B%88%EB%8B%A4)
-  - [3. 어떤 선택자 방식이 적합할까?](#3-%EC%96%B4%EB%96%A4-%EC%84%A0%ED%83%9D%EC%9E%90-%EB%B0%A9%EC%8B%9D%EC%9D%B4-%EC%A0%81%ED%95%A9%ED%95%A0%EA%B9%8C)
-    - [3.1 CSS Selector와 XPath란?](#31-css-selector%EC%99%80-xpath%EB%9E%80)
+    + [1.3 그래서 Chrome 익스텐션을 선택했습니다.](#13-%EA%B7%B8%EB%9E%98%EC%84%9C-chrome-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [2. 선택된 요소의 텍스트, 이미지 변화를 어떻게 감지할까?](#2-%EC%84%A0%ED%83%9D%EB%90%9C-%EC%9A%94%EC%86%8C%EC%9D%98-%ED%85%8D%EC%8A%A4%ED%8A%B8-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B3%80%ED%99%94%EB%A5%BC-%EC%96%B4%EB%96%BB%EA%B2%8C-%EA%B0%90%EC%A7%80%ED%95%A0%EA%B9%8C)
+    + [2.1 사용자가 선택한 요소는 서버에 저장됩니다.](#21-%EC%82%AC%EC%9A%A9%EC%9E%90%EA%B0%80-%EC%84%A0%ED%83%9D%ED%95%9C-%EC%9A%94%EC%86%8C%EB%8A%94-%EC%84%9C%EB%B2%84%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%A9%EB%8B%88%EB%8B%A4)
+    + [2.2 변화 감지는 텍스트와 이미지 주소를 기준으로 합니다.](#22-%EB%B3%80%ED%99%94-%EA%B0%90%EC%A7%80%EB%8A%94-%ED%85%8D%EC%8A%A4%ED%8A%B8%EC%99%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%A3%BC%EC%86%8C%EB%A5%BC-%EA%B8%B0%EC%A4%80%EC%9C%BC%EB%A1%9C-%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [2.3 비교 결과는 변경 여부와 함께 이력에 저장됩니다.](#23-%EB%B9%84%EA%B5%90-%EA%B2%B0%EA%B3%BC%EB%8A%94-%EB%B3%80%EA%B2%BD-%EC%97%AC%EB%B6%80%EC%99%80-%ED%95%A8%EA%BB%98-%EC%9D%B4%EB%A0%A5%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%A9%EB%8B%88%EB%8B%A4)
+    + [2.4 의미있는 변화를 추적합니다.](#24-%EC%9D%98%EB%AF%B8%EC%9E%88%EB%8A%94-%EB%B3%80%ED%99%94%EB%A5%BC-%EC%B6%94%EC%A0%81%ED%95%A9%EB%8B%88%EB%8B%A4)
+  * [3. 어떤 선택자 방식이 적합할까?](#3-%EC%96%B4%EB%96%A4-%EC%84%A0%ED%83%9D%EC%9E%90-%EB%B0%A9%EC%8B%9D%EC%9D%B4-%EC%A0%81%ED%95%A9%ED%95%A0%EA%B9%8C)
+    + [3.1 CSS Selector와 XPath란?](#31-css-selector%EC%99%80-xpath%EB%9E%80)
       - [CSS Selector](#css-selector)
       - [XPath](#xpath)
-    - [3.2 CSS Selector는 직관적이지만 한계가 있습니다.](#32-css-selector%EB%8A%94-%EC%A7%81%EA%B4%80%EC%A0%81%EC%9D%B4%EC%A7%80%EB%A7%8C-%ED%95%9C%EA%B3%84%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.3 XPath 또한 구조 기반 접근이 가능하지만 한계가 있습니다.](#33-xpath-%EB%98%90%ED%95%9C-%EA%B5%AC%EC%A1%B0-%EA%B8%B0%EB%B0%98-%EC%A0%91%EA%B7%BC%EC%9D%B4-%EA%B0%80%EB%8A%A5%ED%95%98%EC%A7%80%EB%A7%8C-%ED%95%9C%EA%B3%84%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.4 XPath와 CSS Selector 혼합 방식을 선택했습니다.](#34-xpath%EC%99%80-css-selector-%ED%98%BC%ED%95%A9-%EB%B0%A9%EC%8B%9D%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [3.2 CSS Selector는 직관적이지만 한계가 있습니다.](#32-css-selector%EB%8A%94-%EC%A7%81%EA%B4%80%EC%A0%81%EC%9D%B4%EC%A7%80%EB%A7%8C-%ED%95%9C%EA%B3%84%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [3.3 XPath 또한 구조 기반 접근이 가능하지만 한계가 있습니다.](#33-xpath-%EB%98%90%ED%95%9C-%EA%B5%AC%EC%A1%B0-%EA%B8%B0%EB%B0%98-%EC%A0%91%EA%B7%BC%EC%9D%B4-%EA%B0%80%EB%8A%A5%ED%95%98%EC%A7%80%EB%A7%8C-%ED%95%9C%EA%B3%84%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [3.4 XPath와 CSS Selector 혼합 방식을 선택했습니다.](#34-xpath%EC%99%80-css-selector-%ED%98%BC%ED%95%A9-%EB%B0%A9%EC%8B%9D%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
 - [👾 Trouble Shooting](#%F0%9F%91%BE-trouble-shooting)
-  - [1. CSR 페이지에서 요소 탐색 실패](#1-csr-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%ED%83%90%EC%83%89-%EC%8B%A4%ED%8C%A8)
-    - [원인: Cheerio는 렌더링되지 않은 HTML만 처리할 수 있습니다.](#%EC%9B%90%EC%9D%B8-cheerio%EB%8A%94-%EB%A0%8C%EB%8D%94%EB%A7%81%EB%90%98%EC%A7%80-%EC%95%8A%EC%9D%80-html%EB%A7%8C-%EC%B2%98%EB%A6%AC%ED%95%A0-%EC%88%98-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [해결 방법: Cheerio를 Playwright로 전환했습니다.](#%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-cheerio%EB%A5%BC-playwright%EB%A1%9C-%EC%A0%84%ED%99%98%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [2. CSR 페이지 요소 탐지 타이밍 문제](#2-csr-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%9A%94%EC%86%8C-%ED%83%90%EC%A7%80-%ED%83%80%EC%9D%B4%EB%B0%8D-%EB%AC%B8%EC%A0%9C)
-    - [원인: DOM이 다 만들어지기 전에 탐색을 시작하면 실패합니다.](#%EC%9B%90%EC%9D%B8-dom%EC%9D%B4-%EB%8B%A4-%EB%A7%8C%EB%93%A4%EC%96%B4%EC%A7%80%EA%B8%B0-%EC%A0%84%EC%97%90-%ED%83%90%EC%83%89%EC%9D%84-%EC%8B%9C%EC%9E%91%ED%95%98%EB%A9%B4-%EC%8B%A4%ED%8C%A8%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [해결 방법: 페이지 전체가 로딩되고 요소가 나올 때까지 기다려야 합니다.](#%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%A0%84%EC%B2%B4%EA%B0%80-%EB%A1%9C%EB%94%A9%EB%90%98%EA%B3%A0-%EC%9A%94%EC%86%8C%EA%B0%80-%EB%82%98%EC%98%AC-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A0%A4%EC%95%BC-%ED%95%A9%EB%8B%88%EB%8B%A4)
+  * [1. CSR 페이지에서 요소 탐색 실패](#1-csr-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%ED%83%90%EC%83%89-%EC%8B%A4%ED%8C%A8)
+    + [원인: Cheerio는 렌더링되지 않은 HTML만 처리할 수 있습니다.](#%EC%9B%90%EC%9D%B8-cheerio%EB%8A%94-%EB%A0%8C%EB%8D%94%EB%A7%81%EB%90%98%EC%A7%80-%EC%95%8A%EC%9D%80-html%EB%A7%8C-%EC%B2%98%EB%A6%AC%ED%95%A0-%EC%88%98-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [해결 방법: Cheerio를 Playwright로 전환했습니다.](#%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-cheerio%EB%A5%BC-playwright%EB%A1%9C-%EC%A0%84%ED%99%98%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [2. CSR 페이지 요소 탐지 타이밍 문제](#2-csr-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%9A%94%EC%86%8C-%ED%83%90%EC%A7%80-%ED%83%80%EC%9D%B4%EB%B0%8D-%EB%AC%B8%EC%A0%9C)
+    + [원인: DOM이 다 만들어지기 전에 탐색을 시작하면 실패합니다.](#%EC%9B%90%EC%9D%B8-dom%EC%9D%B4-%EB%8B%A4-%EB%A7%8C%EB%93%A4%EC%96%B4%EC%A7%80%EA%B8%B0-%EC%A0%84%EC%97%90-%ED%83%90%EC%83%89%EC%9D%84-%EC%8B%9C%EC%9E%91%ED%95%98%EB%A9%B4-%EC%8B%A4%ED%8C%A8%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [해결 방법: 페이지 전체가 로딩되고 요소가 나올 때까지 기다려야 합니다.](#%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%A0%84%EC%B2%B4%EA%B0%80-%EB%A1%9C%EB%94%A9%EB%90%98%EA%B3%A0-%EC%9A%94%EC%86%8C%EA%B0%80-%EB%82%98%EC%98%AC-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A0%A4%EC%95%BC-%ED%95%A9%EB%8B%88%EB%8B%A4)
       - [1) 페이지 전체 렌더링이 완료될 때까지 기다리기](#1-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%A0%84%EC%B2%B4-%EB%A0%8C%EB%8D%94%EB%A7%81%EC%9D%B4-%EC%99%84%EB%A3%8C%EB%90%A0-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A6%AC%EA%B8%B0)
       - [2) 특정 요소가 실제로 등장할 때까지 기다리기](#2-%ED%8A%B9%EC%A0%95-%EC%9A%94%EC%86%8C%EA%B0%80-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%93%B1%EC%9E%A5%ED%95%A0-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A6%AC%EA%B8%B0)
       - [3) 실제로 보이는 상태인지 확인하기](#3-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%B3%B4%EC%9D%B4%EB%8A%94-%EC%83%81%ED%83%9C%EC%9D%B8%EC%A7%80-%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0)
-    - [결과: 실제로 보이는 요소만 안정적으로 탐지할 수 있게 되었습니다.](#%EA%B2%B0%EA%B3%BC-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%B3%B4%EC%9D%B4%EB%8A%94-%EC%9A%94%EC%86%8C%EB%A7%8C-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%ED%83%90%EC%A7%80%ED%95%A0-%EC%88%98-%EC%9E%88%EA%B2%8C-%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [3. 특수문자 ID/class로 인한 CSS 선택 실패 문제](#3-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90-idclass%EB%A1%9C-%EC%9D%B8%ED%95%9C-css-%EC%84%A0%ED%83%9D-%EC%8B%A4%ED%8C%A8-%EB%AC%B8%EC%A0%9C)
-    - [원인: CSS 선택자 문법상 특수문자는 이스케이프 처리가 필요합니다.](#%EC%9B%90%EC%9D%B8-css-%EC%84%A0%ED%83%9D%EC%9E%90-%EB%AC%B8%EB%B2%95%EC%83%81-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90%EB%8A%94-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [해결 방법: `CSS.escape()`로 선택자를 이스케이프 처리합니다.](#%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-cssescape%EB%A1%9C-%EC%84%A0%ED%83%9D%EC%9E%90%EB%A5%BC-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [결과: 실제로 보이는 요소만 안정적으로 탐지할 수 있게 되었습니다.](#%EA%B2%B0%EA%B3%BC-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%B3%B4%EC%9D%B4%EB%8A%94-%EC%9A%94%EC%86%8C%EB%A7%8C-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%ED%83%90%EC%A7%80%ED%95%A0-%EC%88%98-%EC%9E%88%EA%B2%8C-%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  * [3. 특수문자 ID/class로 인한 CSS 선택 실패 문제](#3-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90-idclass%EB%A1%9C-%EC%9D%B8%ED%95%9C-css-%EC%84%A0%ED%83%9D-%EC%8B%A4%ED%8C%A8-%EB%AC%B8%EC%A0%9C)
+    + [원인: CSS 선택자 문법상 특수문자는 이스케이프 처리가 필요합니다.](#%EC%9B%90%EC%9D%B8-css-%EC%84%A0%ED%83%9D%EC%9E%90-%EB%AC%B8%EB%B2%95%EC%83%81-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90%EB%8A%94-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%A9%EB%8B%88%EB%8B%A4)
+    + [해결 방법: `CSS.escape()`로 선택자를 이스케이프 처리합니다.](#%ED%95%B4%EA%B2%B0-%EB%B0%A9%EB%B2%95-cssescape%EB%A1%9C-%EC%84%A0%ED%83%9D%EC%9E%90%EB%A5%BC-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
       - [JANBI에서는 어떻게 사용했을까?](#janbi%EC%97%90%EC%84%9C%EB%8A%94-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%82%AC%EC%9A%A9%ED%96%88%EC%9D%84%EA%B9%8C)
-    - [결과: 특수문자 포함 요소도 안정적으로 선택 가능해졌습니다.](#%EA%B2%B0%EA%B3%BC-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90-%ED%8F%AC%ED%95%A8-%EC%9A%94%EC%86%8C%EB%8F%84-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%84%A0%ED%83%9D-%EA%B0%80%EB%8A%A5%ED%95%B4%EC%A1%8C%EC%8A%B5%EB%8B%88%EB%8B%A4)
+    + [결과: 특수문자 포함 요소도 안정적으로 선택 가능해졌습니다.](#%EA%B2%B0%EA%B3%BC-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90-%ED%8F%AC%ED%95%A8-%EC%9A%94%EC%86%8C%EB%8F%84-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%84%A0%ED%83%9D-%EA%B0%80%EB%8A%A5%ED%95%B4%EC%A1%8C%EC%8A%B5%EB%8B%88%EB%8B%A4)
 - [🛠️ Tech Stack](#%F0%9F%9B%A0%EF%B8%8F-tech-stack)
-  - [1. React + Vite](#1-react--vite)
-  - [2. Node.js + Express.js](#2-nodejs--expressjs)
-  - [3. Tailwind CSS](#3-tailwind-css)
-  - [4. node-cron](#4-node-cron)
-  - [5. Playwright](#5-playwright)
-- [🗓 Timeline](#%F0%9F%97%93-timeline) - [2025.03.31 - 2025.04.25](#20250331---20250425)
+    + [1. React + Vite](#1-react--vite)
+    + [2. Node.js + Express.js](#2-nodejs--expressjs)
+    + [3. Tailwind CSS](#3-tailwind-css)
+    + [4. node-cron](#4-node-cron)
+    + [5. Playwright](#5-playwright)
+- [🗓 Timeline](#%F0%9F%97%93-timeline)
+      - [2025.03.31 - 2025.04.25](#20250331---20250425)
 
 <!-- tocstop -->
 
@@ -63,6 +64,8 @@ JANBI는 '잔업비서'의 줄임말로 경쟁사 웹 페이지의 특정 요소
 “새로운 상품이 등록되었는지” 같은 세부적인 내용을
 매번 직접 확인하지 않고도 자동으로 알림을 받을 수 있도록 하는 것이 목표였습니다. <br>
 그래서 JANBI는 익스텐션 형태로 아래 기능을 제공합니다.
+
+<a href="https://ibb.co/ycGBLKRQ"><img src="https://i.ibb.co/Pv3zBJY6/image.png" alt="image" border="0"></a>
 
 - 사용자가 페이지에서 모니터링하고 싶은 DOM 요소를 클릭으로 선택합니다.
 - 요일과 시간을 선택하면 정해진 시간마다 해당 요소를 분석합니다.
@@ -178,6 +181,8 @@ JANBI는 사용자의 지정한 요소의 '의미 있는 시각적 변화'를 �
 - 변경됨: beforeHtml과 afterHtml이 다름
 - 변경 없음: 두 값이 동일
   이 정보는 DB의 ChangeLog에 기록되며 Slack 알림에도 사용됩니다.
+
+<img src="https://i.ibb.co/dspQQg9t/image.png" alt="image" border="0">
 
 ### 2.4 의미있는 변화를 추적합니다.
 
