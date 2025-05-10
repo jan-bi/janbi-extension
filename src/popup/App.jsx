@@ -1,25 +1,13 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import UrlViewModel from "../viewmodels/UrlViewModel";
 
 export default function App() {
-  const urls = ["https://www.naver.com", "https://www.instagram.com/"];
+  const urlViewModel = new UrlViewModel();
+  const [urls, setUrls] = useState([]);
 
-  const handleOpenDashboard = () => {
-    chrome.tabs.create({ url: "http://localhost:5173/dashboard" });
-  };
-
-  const handleAddUrl = async () => {
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-
-    confirm("현재 보고 있는 페이지에서 모니터링할 요소 선택을 시작합니다.");
-
-    chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["scripts/content.js"],
-    });
-  };
+  useEffect(() => {
+    setUrls(urlViewModel.getUrls());
+  }, []);
 
   return (
     <div className="p-4 w-80 text-sm">
@@ -27,6 +15,7 @@ export default function App() {
       <p className="mb-4 text-gray-600">
         모니터링할 URL을 등록하고 주기적으로 알림받아보세요.
       </p>
+
       <div className="mb-4">
         <h2 className="text-sm font-semibold mb-1">현재 모니터링 중인 URL</h2>
         <ul className="text-xs text-gray-700 list-disc pl-4 space-y-1">
@@ -39,14 +28,15 @@ export default function App() {
           ))}
         </ul>
       </div>
+
       <button
-        onClick={handleAddUrl}
+        onClick={() => urlViewModel.addUrl()}
         className="w-full bg-primary text-white py-1 px-2 rounded mb-2 hover:bg-accent"
       >
         모니터링 URL 추가
       </button>
       <button
-        onClick={handleOpenDashboard}
+        onClick={() => urlViewModel.openDashboard()}
         className="w-full border border-gray-300 text-gray-800 py-1 px-2 rounded hover:bg-gray-100"
       >
         대시보드 열기
