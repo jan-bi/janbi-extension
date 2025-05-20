@@ -1,3 +1,4 @@
+import { CLIENT_URL } from "../constants/env";
 export default class UrlViewModel {
   constructor() {
     this.urls = ["https://www.naver.com", "https://www.instagram.com/"];
@@ -8,7 +9,7 @@ export default class UrlViewModel {
   }
 
   openDashboard() {
-    chrome.tabs.create({ url: "http://localhost:5173/dashboard" });
+    chrome.tabs.create({ url: `${CLIENT_URL}` });
   }
 
   async addUrl() {
