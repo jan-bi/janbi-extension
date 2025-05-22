@@ -33,13 +33,14 @@ saveButton.addEventListener("click", async () => {
     };
 
     try {
-      const res = await fetch(`${API_BASE_URL}/urls`, {
+      const saveUrlResponse = await fetch(`${API_BASE_URL}/urls`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify(urlData),
       });
 
-      const savedResult = await res.json();
+      const savedResult = await saveUrlResponse.json();
 
       if (savedResult?.data) {
         const urlId = savedResult.data._id;
