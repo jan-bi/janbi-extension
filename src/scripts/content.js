@@ -4,13 +4,12 @@ import {
   selectedElements,
 } from "./viewmodels/ContentViewModel.js";
 import { showScheduleSelector } from "./ui/schedulePopup.js";
-import {
-  API_BASE_URL,
-  SLACK_CLIENT_ID,
-  REDIRECT_URI,
-} from "../constants/env.js";
-
 import { saveButton } from "./ui/renderSelectorPanel.js";
+
+const API_BASE_URL = "https://janbi-server-production.up.railway.app";
+const SLACK_CLIENT_ID = "8781626901141.8768958611191";
+const REDIRECT_URI =
+  "https://janbi-server-production.up.railway.app/auth/slack/oauth/callback";
 
 injectStyle();
 initializeElementListeners();
