@@ -28,6 +28,11 @@ export default [
         },
       },
       globals: {
+        process: true,
+        __API_BASE_URL__: "readonly",
+        __CLIENT_URL__: "readonly",
+        __SLACK_CLIENT_ID__: "readonly",
+        __REDIRECT_URI__: "readonly",
         ...globals.browser,
         ...globals.webextensions,
         chrome: "readonly",
