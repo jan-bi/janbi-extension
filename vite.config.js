@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react";
 import { fileURLToPath } from "url";
 import { dirname, resolve } from "path";
 import { viteStaticCopy } from "vite-plugin-static-copy";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,6 +22,13 @@ export default defineConfig({
       ],
     }),
   ],
+
+  define: {
+    __API_BASE_URL__: JSON.stringify(process.env.VITE_API_BASE_URL),
+    __CLIENT_URL__: JSON.stringify(process.env.VITE_CLIENT_URL),
+    __SLACK_CLIENT_ID__: JSON.stringify(process.env.VITE_SLACK_CLIENT_ID),
+    __REDIRECT_URI__: JSON.stringify(process.env.VITE_REDIRECT_URI),
+  },
 
   build: {
     outDir: "dist",
