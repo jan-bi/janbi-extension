@@ -1,4 +1,4 @@
-import { CLIENT_URL } from "../constants/env";
+import ENV from "../constants/env.js";
 export default class UrlViewModel {
   constructor() {
     this.urls = ["https://www.naver.com", "https://www.instagram.com/"];
@@ -9,7 +9,7 @@ export default class UrlViewModel {
   }
 
   openDashboard() {
-    chrome.tabs.create({ url: `${CLIENT_URL}` });
+    chrome.tabs.create({ url: `${ENV.CLIENT_URL}` });
   }
 
   async addUrl() {
@@ -24,5 +24,7 @@ export default class UrlViewModel {
       target: { tabId: tab.id },
       files: ["scripts/content.js"],
     });
+
+    window.close();
   }
 }

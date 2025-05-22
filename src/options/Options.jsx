@@ -1,10 +1,10 @@
 import React, { useEffect } from "react";
-import { API_BASE_URL } from "../constants/env.js";
+import ENV from "../constants/env.js";
 
 export default function Options() {
   useEffect(() => {
     const checkLogin = async () => {
-      const response = await fetch(`${API_BASE_URL}/user/profile`, {
+      const response = await fetch(`${ENV.API_BASE_URL}/user/profile`, {
         credentials: "include",
       });
 
@@ -19,7 +19,7 @@ export default function Options() {
   }, []);
 
   const startLogin = () => {
-    window.location.href = `${API_BASE_URL}/auth/google`;
+    window.location.href = `${ENV.API_BASE_URL}/auth/google`;
   };
 
   return (

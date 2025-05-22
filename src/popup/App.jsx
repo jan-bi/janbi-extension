@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import UrlViewModel from "../viewmodels/UrlViewModel";
-import { API_BASE_URL, CLIENT_URL } from "../constants/env";
+import UrlViewModel from "../viewmodels/UrlViewModel.js";
+import ENV from "../constants/env.js";
 
 export default function App() {
   const urlViewModel = new UrlViewModel();
@@ -11,7 +11,7 @@ export default function App() {
   useEffect(() => {
     const loadUserAndUrls = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/user/profile`, {
+        const res = await fetch(`${ENV.API_BASE_URL}/user/profile`, {
           credentials: "include",
         });
 
@@ -23,7 +23,7 @@ export default function App() {
             setUrls(userUrls);
           }
         } else {
-          const dashboardLoginUrl = `${CLIENT_URL}/login`;
+          const dashboardLoginUrl = `${ENV.CLIENT_URL}/login`;
 
           chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
             if (tabs[0]?.id) {
@@ -43,7 +43,7 @@ export default function App() {
 
   const handleLogout = async () => {
     try {
-      await fetch(`${API_BASE_URL}/user/logout`, {
+      await fetch(`${ENV.API_BASE_URL}/user/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -68,7 +68,7 @@ export default function App() {
         <h2 className="text-lg font-semibold mb-2">로그인이 필요합니다</h2>
         <button
           onClick={() => {
-            chrome.tabs.create({ url: `${CLIENT_URL}` });
+            chrome.tabs.create({ url: `${ENV.CLIENT_URL}` });
           }}
         >
           로그인 하러가기
