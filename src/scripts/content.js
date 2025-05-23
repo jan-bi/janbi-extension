@@ -6,7 +6,6 @@ import {
 import { showScheduleSelector } from "./ui/schedulePopup.js";
 import { saveButton } from "./ui/renderSelectorPanel.js";
 
-const API_BASE_URL = "https://janbi-server-production.up.railway.app";
 const SLACK_CLIENT_ID = "8781626901141.8768958611191";
 const REDIRECT_URI =
   "https://janbi-server-production.up.railway.app/auth/slack/oauth/callback";
@@ -17,6 +16,7 @@ initializeElementListeners();
 saveButton.addEventListener("click", async () => {
   if (selectedElements.size === 0) {
     alert("선택한 요소가 없습니다.");
+
     return;
   }
 
@@ -32,34 +32,30 @@ saveButton.addEventListener("click", async () => {
       selectors: [...selectedElements],
     };
 
-    try {
-      const saveUrlResponse = await fetch(`${API_BASE_URL}/urls`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(urlData),
-      });
+    chrome.runtime.sendMessage(
+      {
+        type: "POST_URL",
+        payload: urlData,
+      },
+      (response) => {
+        if (response?.data?._id) {
+          const urlId = response.data._id;
 
-      const savedResult = await saveUrlResponse.json();
+          alert(
+            "모니터링 할 요소가 성공적으로 저장되었습니다. 슬랙 채널을 설정해주세요.",
+          );
 
-      if (savedResult?.data) {
-        const urlId = savedResult.data._id;
+          const slackAuthUrl = `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=chat:write,incoming-webhook&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${urlId}`;
+          window.open(slackAuthUrl, "_blank", "width=600,height=800");
 
-        alert(
-          "모니터링 할 요소가 성공적으로 저장되었습니다. 슬랙 채널을 설정해주세요.",
-        );
-        const slackAuthUrl = `https://slack.com/oauth/v2/authorize?client_id=${SLACK_CLIENT_ID}&scope=chat:write,incoming-webhook&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${urlId}`;
-        window.open(slackAuthUrl, "_blank", "width=600,height=800");
-
-        selectedElements.clear();
-        document
-          .querySelectorAll(".janbi-selected")
-          .forEach((el) => el.classList.remove("janbi-selected"));
-      } else {
-        alert("저장 실패: " + savedResult.message);
-      }
-    } catch {
-      alert("서버 오류가 발생했습니다.");
-    }
+          selectedElements.clear();
+          document
+            .querySelectorAll(".janbi-selected")
+            .forEach((el) => el.classList.remove("janbi-selected"));
+        } else {
+          alert("모니터링 요소 저장에 실패했습니다." + response?.message);
+        }
+      },
+    );
   });
 });
