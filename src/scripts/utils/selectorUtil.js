@@ -1,6 +1,7 @@
 function getCssSelector(targetElement) {
-  if (!targetElement || !targetElement.nodeType === Node.ELEMENT_NODE)
+  if (!targetElement || !targetElement.nodeType === Node.ELEMENT_NODE) {
     return null;
+  }
 
   if (targetElement.id && !targetElement.id.startsWith("janbi-")) {
     return `#${CSS.escape(targetElement.id)}`;

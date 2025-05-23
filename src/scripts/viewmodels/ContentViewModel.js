@@ -43,12 +43,12 @@ function onClick(ev) {
   const content = extractElementValue(targetElement);
 
   const typedSelectorKey = `${type}:${selector}`;
-  const found = [...selectedElements].find(
-    (el) => `${el.type}:${el.selector}` === typedSelectorKey,
+  const alreadySelected = [...selectedElements].find(
+    (selected) => `${selected.type}:${selected.selector}` === typedSelectorKey,
   );
 
-  if (found) {
-    selectedElements.delete(found);
+  if (alreadySelected) {
+    selectedElements.delete(alreadySelected);
     targetElement.classList.remove("janbi-selected");
   } else {
     selectedElements.add({ type, selector, content });

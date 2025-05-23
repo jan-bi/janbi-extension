@@ -1,5 +1,6 @@
 export function showScheduleSelector(onSelect) {
   const existing = document.querySelector("#janbi-schedule-ui");
+
   if (existing) existing.remove();
 
   const schedulePopup = document.createElement("div");

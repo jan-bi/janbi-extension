@@ -51,7 +51,9 @@ saveButton.addEventListener("click", async () => {
           selectedElements.clear();
           document
             .querySelectorAll(".janbi-selected")
-            .forEach((el) => el.classList.remove("janbi-selected"));
+            .forEach((selectedElement) =>
+              selectedElement.classList.remove("janbi-selected"),
+            );
         } else {
           alert("모니터링 요소 저장에 실패했습니다." + response?.message);
         }

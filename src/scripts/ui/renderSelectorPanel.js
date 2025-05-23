@@ -2,6 +2,7 @@ import { getElementFromTypedSelector } from "../utils/selectorUtil.js";
 import { selectedElements } from "../viewmodels/ContentViewModel.js";
 
 let selectorPanel = document.querySelector("#janbi-selector-panel");
+
 if (!selectorPanel) {
   selectorPanel = document.createElement("div");
   selectorPanel.id = "janbi-selector-panel";

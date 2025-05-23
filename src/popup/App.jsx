@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import UrlViewModel from "../viewmodels/UrlViewModel.js";
 import ENV from "../constants/env.js";
 
@@ -11,14 +11,16 @@ export default function App() {
   useEffect(() => {
     const loadUserAndUrls = async () => {
       try {
-        const res = await fetch(`${ENV.API_BASE_URL}/user/profile`, {
+        const loginResponse = await fetch(`${ENV.API_BASE_URL}/user/profile`, {
           credentials: "include",
         });
 
-        if (res.ok) {
-          const data = await res.json();
-          if (data?.user) {
-            setUser(data.user);
+        if (loginResponse.ok) {
+          const profileData = await loginResponse.json();
+
+          if (profileData?.user) {
+            setUser(profileData.user);
+
             const userUrls = urlViewModel.getUrls();
             setUrls(userUrls);
           }

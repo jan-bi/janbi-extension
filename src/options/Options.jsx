@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import ENV from "../constants/env.js";
 
 export default function Options() {
