@@ -1,16 +1,49 @@
-export default function injectStyle() {
-  const styleTag = document.createElement("style");
-  styleTag.textContent = `
-  .janbi-hover {
-    outline: 2px dashed #2536D2 !important;
-    cursor: crosshair !important;
+export function injectGlobalHoverStyles() {
+  if (document.querySelector("#janbi-global-style")) return;
+
+  const style = document.createElement("style");
+  style.id = "janbi-global-style";
+  style.textContent = `
+    .janbi-hover {
+      outline: 2px dashed #2536D2 !important;
+      cursor: crosshair !important;
+    }
+
+    .janbi-selected {
+      outline: 2px solid rgba(61, 61, 60, 0.35) !important;
+      background-color: rgba(255, 250, 200, 0.55) !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+export function injectShadowPanel() {
+  const existing = document.querySelector("#janbi-shadow-container");
+
+  if (existing && existing.shadowRoot) {
+    return existing.shadowRoot;
   }
 
-  .janbi-selected {
-    outline: 2px solid rgba(61, 61, 60, 0.35) !important;
-    background-color: rgba(255, 250, 200, 0.55) !important;
-  }
+  injectGlobalHoverStyles();
 
+  const container = document.createElement("div");
+  container.id = "janbi-shadow-container";
+  container.style.all = "initial";
+  container.style.position = "fixed";
+  container.style.top = "0";
+  container.style.left = "0";
+  container.style.width = "0";
+  container.style.height = "0";
+  container.style.zIndex = "999999";
+  container.style.pointerEvents = "none";
+  container.style.background = "none";
+
+  const shadowRoot = container.attachShadow({ mode: "open" });
+
+  document.body.appendChild(container);
+
+  const selectorPanelStyleTag = document.createElement("style");
+  selectorPanelStyleTag.textContent = `
   #janbi-selector-panel {
     position: fixed;
     top: 100px;
@@ -75,5 +108,11 @@ export default function injectStyle() {
   }
   `;
 
-  document.head.appendChild(styleTag);
+  shadowRoot.prepend(selectorPanelStyleTag);
+
+  const panelWrapper = document.createElement("div");
+  panelWrapper.id = "janbi-selector-panel";
+  shadowRoot.appendChild(panelWrapper);
+
+  return shadowRoot;
 }
