@@ -6,11 +6,15 @@ import { renderSelectorPanel } from "../ui/renderSelectorPanel.js";
 
 export const selectedElements = new Set();
 
-export function initializeElementListeners() {
+export function initializeElementListeners(shadowRoot, onSaveClick) {
   document.querySelectorAll("*").forEach((targetElement) => {
     targetElement.addEventListener("mouseover", onHover);
     targetElement.addEventListener("mouseout", offHover);
-    targetElement.addEventListener("click", onClick, true);
+    targetElement.addEventListener(
+      "click",
+      (ev) => onClick(ev, shadowRoot, onSaveClick),
+      true,
+    );
   });
 }
 
@@ -28,7 +32,7 @@ function offHover(ev) {
   ev.target.classList.remove("janbi-hover");
 }
 
-function onClick(ev) {
+function onClick(ev, shadowRoot, onSaveClick) {
   if (
     ev.target.closest("#janbi-selector-panel") ||
     ev.target.closest("#janbi-schedule-ui")
@@ -55,5 +59,5 @@ function onClick(ev) {
     targetElement.classList.add("janbi-selected");
   }
 
-  renderSelectorPanel();
+  renderSelectorPanel(shadowRoot, onSaveClick);
 }
