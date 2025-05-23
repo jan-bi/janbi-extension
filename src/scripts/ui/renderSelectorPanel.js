@@ -1,30 +1,11 @@
 import { getElementFromTypedSelector } from "../utils/selectorUtil.js";
 import { selectedElements } from "../viewmodels/ContentViewModel.js";
 
-let selectorPanel = document.querySelector("#janbi-selector-panel");
+export function renderSelectorPanel(shadowRoot, onSaveClick) {
+  const selectorPanel = shadowRoot.querySelector("#janbi-selector-panel");
 
-if (!selectorPanel) {
-  selectorPanel = document.createElement("div");
-  selectorPanel.id = "janbi-selector-panel";
-  document.body.appendChild(selectorPanel);
-}
+  if (!selectorPanel) return;
 
-const saveButton = document.createElement("button");
-saveButton.textContent = "저장하기";
-saveButton.style.cssText = `
-  position: absolute;
-  top: 14px;
-  right: 20px;
-  padding: 6px 12px;
-  background-color: #2536D2;
-  color: white;
-  font-size: 13px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-`;
-
-export function renderSelectorPanel() {
   selectorPanel.innerHTML = "";
 
   const title = document.createElement("h2");
@@ -56,24 +37,39 @@ export function renderSelectorPanel() {
     removeBtn.addEventListener("click", () => {
       selectedElements.delete(
         [...selectedElements].find(
-          (el) => el.type === type && el.selector === selector,
+          (selected) =>
+            selected.type === type && selected.selector === selector,
         ),
       );
 
       const targetElement = getElementFromTypedSelector(`${type}:${selector}`);
       if (targetElement) targetElement.classList.remove("janbi-selected");
 
-      renderSelectorPanel();
+      renderSelectorPanel(shadowRoot, onSaveClick);
     });
 
     li.appendChild(removeBtn);
     listContainer.appendChild(li);
   });
 
+  const saveButton = document.createElement("button");
+  saveButton.className = "save-button";
+  saveButton.textContent = "저장하기";
+  saveButton.style.cssText = `
+    margin-top: 16px;
+    background-color: #2536D2;
+    color: white;
+    padding: 8px 12px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  `;
+  saveButton.onclick = null;
+  saveButton.addEventListener("click", onSaveClick);
+
   selectorPanel.appendChild(title);
   selectorPanel.appendChild(subtitle);
   selectorPanel.appendChild(listContainer);
   selectorPanel.appendChild(saveButton);
 }
-
-export { selectorPanel, saveButton };
