@@ -8,5 +8,9 @@
   },
   "permissions": ["tabs", "scripting", "storage", "cookies"],
   "host_permissions": ["http://*/*", "https://*/*"],
+  "background": {
+    "service_worker": "background/background.js",
+    "type": "module"
+  },
   "options_page": "options/index.html"
 }
