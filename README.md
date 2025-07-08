@@ -1,6 +1,6 @@
 # 📌 프로젝트 소개: JANBI란?
 
-JANBI는 '잔업비서'의 줄임말로 경쟁사 웹 페이지의 특정 요소를 자동으로 모니터링하고 변경사항이 감지되면 Slack으로 알려주는 Chrome 익스텐션입니다.
+JANBI는 “잔업비서”의 줄임말로 마케터와 스타트업 팀이 경쟁사 웹페이지의 변화를 빠르게 파악할 수 있도록 돕는 자동화 도구입니다. 사용자가 지정한 웹페이지의 요소를 주기적으로 감시하고 변경이 감지되면 Slack으로 자동 알림을 전송해 반복적인 수작업 모니터링을 줄여주는 크롬 확장 프로그램입니다.
 
 # 📖 목차
 
@@ -8,79 +8,21 @@ JANBI는 '잔업비서'의 줄임말로 경쟁사 웹 페이지의 특정 요소
 
 - [Motivation 🔥](#motivation-)
 - [Preview 📷](#preview-)
+- [Architecture 🔧](#architecture-)
 - [Development 💻](#development-)
   - [1. 왜 익스텐션이어야 했을까?](#1-%EC%99%9C-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%B4%EC%96%B4%EC%95%BC-%ED%96%88%EC%9D%84%EA%B9%8C)
-    - [1.1 팝업으로는 외부 페이지의 DOM에 접근할 수 없습니다.](#11-%ED%8C%9D%EC%97%85%EC%9C%BC%EB%A1%9C%EB%8A%94-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9D%98-dom%EC%97%90-%EC%A0%91%EA%B7%BC%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [1) 팝업은 별도의 브라우저 컨텍스트입니다.](#1-%ED%8C%9D%EC%97%85%EC%9D%80-%EB%B3%84%EB%8F%84%EC%9D%98-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EC%BB%A8%ED%85%8D%EC%8A%A4%ED%8A%B8%EC%9E%85%EB%8B%88%EB%8B%A4)
-      - [2) 팝업 내부에서 사용자 클릭을 감지하려면 JS 코드 삽입이 필요하지만 대부분 차단됩니다.](#2-%ED%8C%9D%EC%97%85-%EB%82%B4%EB%B6%80%EC%97%90%EC%84%9C-%EC%82%AC%EC%9A%A9%EC%9E%90-%ED%81%B4%EB%A6%AD%EC%9D%84-%EA%B0%90%EC%A7%80%ED%95%98%EB%A0%A4%EB%A9%B4-js-%EC%BD%94%EB%93%9C-%EC%82%BD%EC%9E%85%EC%9D%B4-%ED%95%84%EC%9A%94%ED%95%98%EC%A7%80%EB%A7%8C-%EB%8C%80%EB%B6%80%EB%B6%84-%EC%B0%A8%EB%8B%A8%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [1.2 iframe 또한 브라우저 보안 정책으로 인해 대부분의 외부 페이지를 삽입할 수 없습니다.](#12-iframe-%EB%98%90%ED%95%9C-%EB%B8%8C%EB%9D%BC%EC%9A%B0%EC%A0%80-%EB%B3%B4%EC%95%88-%EC%A0%95%EC%B1%85%EC%9C%BC%EB%A1%9C-%EC%9D%B8%ED%95%B4-%EB%8C%80%EB%B6%80%EB%B6%84%EC%9D%98-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%A5%BC-%EC%82%BD%EC%9E%85%ED%95%A0-%EC%88%98-%EC%97%86%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [1) iframe 삽입 자체가 차단됩니다.](#1-iframe-%EC%82%BD%EC%9E%85-%EC%9E%90%EC%B2%B4%EA%B0%80-%EC%B0%A8%EB%8B%A8%EB%90%A9%EB%8B%88%EB%8B%A4)
-      - [2) 만약 iframe 삽입이 되더라도 DOM 접근은 불가능합니다.](#2-%EB%A7%8C%EC%95%BD-iframe-%EC%82%BD%EC%9E%85%EC%9D%B4-%EB%90%98%EB%8D%94%EB%9D%BC%EB%8F%84-dom-%EC%A0%91%EA%B7%BC%EC%9D%80-%EB%B6%88%EA%B0%80%EB%8A%A5%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [1.3 그래서 Chrome 익스텐션을 선택했습니다.](#13-%EA%B7%B8%EB%9E%98%EC%84%9C-chrome-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
   - [2. DOM 요소를 선택할 때 어떤 선택자 방식이 적합할까?](#2-dom-%EC%9A%94%EC%86%8C%EB%A5%BC-%EC%84%A0%ED%83%9D%ED%95%A0-%EB%95%8C-%EC%96%B4%EB%96%A4-%EC%84%A0%ED%83%9D%EC%9E%90-%EB%B0%A9%EC%8B%9D%EC%9D%B4-%EC%A0%81%ED%95%A9%ED%95%A0%EA%B9%8C)
-    - [2.1 CSS Selector와 XPath란?](#21-css-selector%EC%99%80-xpath%EB%9E%80)
-      - [CSS Selector](#css-selector)
-      - [XPath](#xpath)
-    - [2.2 CSS Selector는 직관적이지만 한계가 있습니다.](#22-css-selector%EB%8A%94-%EC%A7%81%EA%B4%80%EC%A0%81%EC%9D%B4%EC%A7%80%EB%A7%8C-%ED%95%9C%EA%B3%84%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [2.3 XPath 또한 구조 기반 접근이 가능하지만 한계가 있습니다.](#23-xpath-%EB%98%90%ED%95%9C-%EA%B5%AC%EC%A1%B0-%EA%B8%B0%EB%B0%98-%EC%A0%91%EA%B7%BC%EC%9D%B4-%EA%B0%80%EB%8A%A5%ED%95%98%EC%A7%80%EB%A7%8C-%ED%95%9C%EA%B3%84%EA%B0%80-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [2.4 XPath와 CSS Selector 혼합 방식을 선택했습니다.](#24-xpath%EC%99%80-css-selector-%ED%98%BC%ED%95%A9-%EB%B0%A9%EC%8B%9D%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
   - [3. 선택된 요소의 텍스트, 이미지 변화를 어떻게 감지할까?](#3-%EC%84%A0%ED%83%9D%EB%90%9C-%EC%9A%94%EC%86%8C%EC%9D%98-%ED%85%8D%EC%8A%A4%ED%8A%B8-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EB%B3%80%ED%99%94%EB%A5%BC-%EC%96%B4%EB%96%BB%EA%B2%8C-%EA%B0%90%EC%A7%80%ED%95%A0%EA%B9%8C)
-    - [3.1 사용자가 선택한 요소는 서버에 저장됩니다.](#31-%EC%82%AC%EC%9A%A9%EC%9E%90%EA%B0%80-%EC%84%A0%ED%83%9D%ED%95%9C-%EC%9A%94%EC%86%8C%EB%8A%94-%EC%84%9C%EB%B2%84%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [3.2 변화 감지는 텍스트와 이미지 주소를 기준으로 합니다.](#32-%EB%B3%80%ED%99%94-%EA%B0%90%EC%A7%80%EB%8A%94-%ED%85%8D%EC%8A%A4%ED%8A%B8%EC%99%80-%EC%9D%B4%EB%AF%B8%EC%A7%80-%EC%A3%BC%EC%86%8C%EB%A5%BC-%EA%B8%B0%EC%A4%80%EC%9C%BC%EB%A1%9C-%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [3.3 비교 결과는 변경 여부와 함께 이력에 저장됩니다.](#33-%EB%B9%84%EA%B5%90-%EA%B2%B0%EA%B3%BC%EB%8A%94-%EB%B3%80%EA%B2%BD-%EC%97%AC%EB%B6%80%EC%99%80-%ED%95%A8%EA%BB%98-%EC%9D%B4%EB%A0%A5%EC%97%90-%EC%A0%80%EC%9E%A5%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [3.4 시각적으로 의미 있는 변화만 감지해 불필요한 알림을 줄입니다.](#34-%EC%8B%9C%EA%B0%81%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%9D%98%EB%AF%B8-%EC%9E%88%EB%8A%94-%EB%B3%80%ED%99%94%EB%A7%8C-%EA%B0%90%EC%A7%80%ED%95%B4-%EB%B6%88%ED%95%84%EC%9A%94%ED%95%9C-%EC%95%8C%EB%A6%BC%EC%9D%84-%EC%A4%84%EC%9E%85%EB%8B%88%EB%8B%A4)
   - [4. Slack은 어떻게 연동할까?](#4-slack%EC%9D%80-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%97%B0%EB%8F%99%ED%95%A0%EA%B9%8C)
-    - [4.1 실시간 팀 알림에 적합한 수단인 Slack을 선택했습니다.](#41-%EC%8B%A4%EC%8B%9C%EA%B0%84-%ED%8C%80-%EC%95%8C%EB%A6%BC%EC%97%90-%EC%A0%81%ED%95%A9%ED%95%9C-%EC%88%98%EB%8B%A8%EC%9D%B8-slack%EC%9D%84-%EC%84%A0%ED%83%9D%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [4.2 Slack 인증은 익스텐션 팝업으로 진행합니다.](#42-slack-%EC%9D%B8%EC%A6%9D%EC%9D%80-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98-%ED%8C%9D%EC%97%85%EC%9C%BC%EB%A1%9C-%EC%A7%84%ED%96%89%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [4.3 인증이 완료되면 서버가 Slack 채널 정보를 저장합니다.](#43-%EC%9D%B8%EC%A6%9D%EC%9D%B4-%EC%99%84%EB%A3%8C%EB%90%98%EB%A9%B4-%EC%84%9C%EB%B2%84%EA%B0%80-slack-%EC%B1%84%EB%84%90-%EC%A0%95%EB%B3%B4%EB%A5%BC-%EC%A0%80%EC%9E%A5%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [4.4 Slack 메시지는 before/after 형식으로 발송됩니다.](#44-slack-%EB%A9%94%EC%8B%9C%EC%A7%80%EB%8A%94-beforeafter-%ED%98%95%EC%8B%9D%EC%9C%BC%EB%A1%9C-%EB%B0%9C%EC%86%A1%EB%90%A9%EB%8B%88%EB%8B%A4)
   - [5. 정해진 시간에 어떻게 알림을 보낼까?](#5-%EC%A0%95%ED%95%B4%EC%A7%84-%EC%8B%9C%EA%B0%84%EC%97%90-%EC%96%B4%EB%96%BB%EA%B2%8C-%EC%95%8C%EB%A6%BC%EC%9D%84-%EB%B3%B4%EB%82%BC%EA%B9%8C)
-    - [5.1 node-cron으로 반복 작업 스케줄을 관리합니다.](#51-node-cron%EC%9C%BC%EB%A1%9C-%EB%B0%98%EB%B3%B5-%EC%9E%91%EC%97%85-%EC%8A%A4%EC%BC%80%EC%A4%84%EC%9D%84-%EA%B4%80%EB%A6%AC%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [5.2 스케줄은 사용자 등록 시점에 동적으로 생성됩니다.](#52-%EC%8A%A4%EC%BC%80%EC%A4%84%EC%9D%80-%EC%82%AC%EC%9A%A9%EC%9E%90-%EB%93%B1%EB%A1%9D-%EC%8B%9C%EC%A0%90%EC%97%90-%EB%8F%99%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%83%9D%EC%84%B1%EB%90%A9%EB%8B%88%EB%8B%A4)
-    - [5.3 서버 재시작 시 스케줄이 초기화되는 문제가 있었습니다.](#53-%EC%84%9C%EB%B2%84-%EC%9E%AC%EC%8B%9C%EC%9E%91-%EC%8B%9C-%EC%8A%A4%EC%BC%80%EC%A4%84%EC%9D%B4-%EC%B4%88%EA%B8%B0%ED%99%94%EB%90%98%EB%8A%94-%EB%AC%B8%EC%A0%9C%EA%B0%80-%EC%9E%88%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [5.4 향후에는 Redis와 큐 시스템으로 구조 개선 예정입니다.](#54-%ED%96%A5%ED%9B%84%EC%97%90%EB%8A%94-redis%EC%99%80-%ED%81%90-%EC%8B%9C%EC%8A%A4%ED%85%9C%EC%9C%BC%EB%A1%9C-%EA%B5%AC%EC%A1%B0-%EA%B0%9C%EC%84%A0-%EC%98%88%EC%A0%95%EC%9E%85%EB%8B%88%EB%8B%A4)
+  - [6. 향후에는 Redis와 메시지 큐로 구조를 개선할 계획입니다.](#6-%ED%96%A5%ED%9B%84%EC%97%90%EB%8A%94-redis%EC%99%80-%EB%A9%94%EC%8B%9C%EC%A7%80-%ED%81%90%EB%A1%9C-%EA%B5%AC%EC%A1%B0%EB%A5%BC-%EA%B0%9C%EC%84%A0%ED%95%A0-%EA%B3%84%ED%9A%8D%EC%9E%85%EB%8B%88%EB%8B%A4)
 - [Trouble Shooting 👾](#trouble-shooting-)
-  - [1. CSR 페이지에서 요소 탐색이 실패했던 이유와 Playwright로의 전환](#1-csr-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%ED%83%90%EC%83%89%EC%9D%B4-%EC%8B%A4%ED%8C%A8%ED%96%88%EB%8D%98-%EC%9D%B4%EC%9C%A0%EC%99%80-playwright%EB%A1%9C%EC%9D%98-%EC%A0%84%ED%99%98)
-    - [1.1 Cheerio는 렌더링되지 않은 HTML만 처리할 수 있습니다.](#11-cheerio%EB%8A%94-%EB%A0%8C%EB%8D%94%EB%A7%81%EB%90%98%EC%A7%80-%EC%95%8A%EC%9D%80-html%EB%A7%8C-%EC%B2%98%EB%A6%AC%ED%95%A0-%EC%88%98-%EC%9E%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [1.2 Cheerio와 Playwright를 혼합해서 사용해보았습니다.](#12-cheerio%EC%99%80-playwright%EB%A5%BC-%ED%98%BC%ED%95%A9%ED%95%B4%EC%84%9C-%EC%82%AC%EC%9A%A9%ED%95%B4%EB%B3%B4%EC%95%98%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [1.3 DOM이 다 만들어지기 전에 탐색을 시작하면 실패합니다.](#13-dom%EC%9D%B4-%EB%8B%A4-%EB%A7%8C%EB%93%A4%EC%96%B4%EC%A7%80%EA%B8%B0-%EC%A0%84%EC%97%90-%ED%83%90%EC%83%89%EC%9D%84-%EC%8B%9C%EC%9E%91%ED%95%98%EB%A9%B4-%EC%8B%A4%ED%8C%A8%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [1.4 페이지 전체가 로딩되고 요소가 나올 때까지 기다려야 합니다.](#14-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%A0%84%EC%B2%B4%EA%B0%80-%EB%A1%9C%EB%94%A9%EB%90%98%EA%B3%A0-%EC%9A%94%EC%86%8C%EA%B0%80-%EB%82%98%EC%98%AC-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A0%A4%EC%95%BC-%ED%95%A9%EB%8B%88%EB%8B%A4)
-      - [1) 페이지 전체 렌더링이 완료될 때까지 기다리기](#1-%ED%8E%98%EC%9D%B4%EC%A7%80-%EC%A0%84%EC%B2%B4-%EB%A0%8C%EB%8D%94%EB%A7%81%EC%9D%B4-%EC%99%84%EB%A3%8C%EB%90%A0-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A6%AC%EA%B8%B0)
-      - [2) 특정 요소가 실제로 등장할 때까지 기다리기](#2-%ED%8A%B9%EC%A0%95-%EC%9A%94%EC%86%8C%EA%B0%80-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%93%B1%EC%9E%A5%ED%95%A0-%EB%95%8C%EA%B9%8C%EC%A7%80-%EA%B8%B0%EB%8B%A4%EB%A6%AC%EA%B8%B0)
-      - [3) 실제로 보이는 상태인지 확인하기](#3-%EC%8B%A4%EC%A0%9C%EB%A1%9C-%EB%B3%B4%EC%9D%B4%EB%8A%94-%EC%83%81%ED%83%9C%EC%9D%B8%EC%A7%80-%ED%99%95%EC%9D%B8%ED%95%98%EA%B8%B0)
-    - [1.5 CSR 페이지에서도 요소 탐지가 안정적으로 동작하게 되었습니다.](#15-csr-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C%EB%8F%84-%EC%9A%94%EC%86%8C-%ED%83%90%EC%A7%80%EA%B0%80-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%EB%8F%99%EC%9E%91%ED%95%98%EA%B2%8C-%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [2. 외부 페이지에서 URL 저장이 되지 않았습니다.](#2-%EC%99%B8%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-url-%EC%A0%80%EC%9E%A5%EC%9D%B4-%EB%90%98%EC%A7%80-%EC%95%8A%EC%95%98%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [2.1 크롬 익스텐션의 Content Script는 페이지의 origin을 따라갑니다.](#21-%ED%81%AC%EB%A1%AC-%EC%9D%B5%EC%8A%A4%ED%85%90%EC%85%98%EC%9D%98-content-script%EB%8A%94-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%9D%98-origin%EC%9D%84-%EB%94%B0%EB%9D%BC%EA%B0%91%EB%8B%88%EB%8B%A4)
-    - [2.2 서버에서 CORS를 조건부 허용해보았습니다.](#22-%EC%84%9C%EB%B2%84%EC%97%90%EC%84%9C-cors%EB%A5%BC-%EC%A1%B0%EA%B1%B4%EB%B6%80-%ED%97%88%EC%9A%A9%ED%95%B4%EB%B3%B4%EC%95%98%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [2.3 background script를 통해 요청을 보내야 했습니다.](#23-background-script%EB%A5%BC-%ED%86%B5%ED%95%B4-%EC%9A%94%EC%B2%AD%EC%9D%84-%EB%B3%B4%EB%82%B4%EC%95%BC-%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [1) Content Script에서 background로 메시지를 전송합니다.](#1-content-script%EC%97%90%EC%84%9C-background%EB%A1%9C-%EB%A9%94%EC%8B%9C%EC%A7%80%EB%A5%BC-%EC%A0%84%EC%86%A1%ED%95%A9%EB%8B%88%EB%8B%A4)
-      - [2) background에서 서버로 요청을 전송합니다.](#2-background%EC%97%90%EC%84%9C-%EC%84%9C%EB%B2%84%EB%A1%9C-%EC%9A%94%EC%B2%AD%EC%9D%84-%EC%A0%84%EC%86%A1%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [2.4 URL 저장 기능이 모든 페이지에서 정상 동작하게 되었습니다.](#24-url-%EC%A0%80%EC%9E%A5-%EA%B8%B0%EB%8A%A5%EC%9D%B4-%EB%AA%A8%EB%93%A0-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-%EC%A0%95%EC%83%81-%EB%8F%99%EC%9E%91%ED%95%98%EA%B2%8C-%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  - [1. CSR 페이지에서 요소 감지에 실패해 Playwright로 전환했습니다.](#1-csr-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%EA%B0%90%EC%A7%80%EC%97%90-%EC%8B%A4%ED%8C%A8%ED%95%B4-playwright%EB%A1%9C-%EC%A0%84%ED%99%98%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
+  - [2. 사용자 지정 웹사이트에서 URL 저장이 되지 않았습니다.](#2-%EC%82%AC%EC%9A%A9%EC%9E%90-%EC%A7%80%EC%A0%95-%EC%9B%B9%EC%82%AC%EC%9D%B4%ED%8A%B8%EC%97%90%EC%84%9C-url-%EC%A0%80%EC%9E%A5%EC%9D%B4-%EB%90%98%EC%A7%80-%EC%95%8A%EC%95%98%EC%8A%B5%EB%8B%88%EB%8B%A4)
   - [3. 특수문자 ID/class로 인해 요소 탐색이 실패했습니다.](#3-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90-idclass%EB%A1%9C-%EC%9D%B8%ED%95%B4-%EC%9A%94%EC%86%8C-%ED%83%90%EC%83%89%EC%9D%B4-%EC%8B%A4%ED%8C%A8%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.1 CSS 선택자에서 특수문자는 이스케이프 처리가 필요합니다.](#31-css-%EC%84%A0%ED%83%9D%EC%9E%90%EC%97%90%EC%84%9C-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90%EB%8A%94-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%EA%B0%80-%ED%95%84%EC%9A%94%ED%95%A9%EB%8B%88%EB%8B%A4)
-    - [3.2 `CSS.escape()`를 사용해 선택자를 이스케이프 처리했습니다.](#32-cssescape%EB%A5%BC-%EC%82%AC%EC%9A%A9%ED%95%B4-%EC%84%A0%ED%83%9D%EC%9E%90%EB%A5%BC-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [3.3 선택자 생성 단계에서 자동 이스케이프 처리하도록 구현했습니다.](#33-%EC%84%A0%ED%83%9D%EC%9E%90-%EC%83%9D%EC%84%B1-%EB%8B%A8%EA%B3%84%EC%97%90%EC%84%9C-%EC%9E%90%EB%8F%99-%EC%9D%B4%EC%8A%A4%EC%BC%80%EC%9D%B4%ED%94%84-%EC%B2%98%EB%A6%AC%ED%95%98%EB%8F%84%EB%A1%9D-%EA%B5%AC%ED%98%84%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.4 특수문자가 포함된 요소도 안정적으로 추적할 수 있게 되었습니다.](#34-%ED%8A%B9%EC%88%98%EB%AC%B8%EC%9E%90%EA%B0%80-%ED%8F%AC%ED%95%A8%EB%90%9C-%EC%9A%94%EC%86%8C%EB%8F%84-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%B6%94%EC%A0%81%ED%95%A0-%EC%88%98-%EC%9E%88%EA%B2%8C-%EB%90%98%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
   - [4. 일부 페이지에서 요소 선택 UI가 깨지거나 보이지 않았습니다.](#4-%EC%9D%BC%EB%B6%80-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90%EC%84%9C-%EC%9A%94%EC%86%8C-%EC%84%A0%ED%83%9D-ui%EA%B0%80-%EA%B9%A8%EC%A7%80%EA%B1%B0%EB%82%98-%EB%B3%B4%EC%9D%B4%EC%A7%80-%EC%95%8A%EC%95%98%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [4.1 외부 웹 사이트의 스타일이 UI에 영향을 주었습니다.](#41-%EC%99%B8%EB%B6%80-%EC%9B%B9-%EC%82%AC%EC%9D%B4%ED%8A%B8%EC%9D%98-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%B4-ui%EC%97%90-%EC%98%81%ED%96%A5%EC%9D%84-%EC%A3%BC%EC%97%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [4.2 Shadow DOM을 사용해 UI를 캡슐화시켰습니다.](#42-shadow-dom%EC%9D%84-%EC%82%AC%EC%9A%A9%ED%95%B4-ui%EB%A5%BC-%EC%BA%A1%EC%8A%90%ED%99%94%EC%8B%9C%EC%BC%B0%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [1) 스타일도 Shadow DOM 내부에 삽입했습니다.](#1-%EC%8A%A4%ED%83%80%EC%9D%BC%EB%8F%84-shadow-dom-%EB%82%B4%EB%B6%80%EC%97%90-%EC%82%BD%EC%9E%85%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-      - [2) 유저가 선택할 때 UI 스타일은 원래 페이지에 스타일을 삽입했습니다.](#2-%EC%9C%A0%EC%A0%80%EA%B0%80-%EC%84%A0%ED%83%9D%ED%95%A0-%EB%95%8C-ui-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%80-%EC%9B%90%EB%9E%98-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90-%EC%8A%A4%ED%83%80%EC%9D%BC%EC%9D%84-%EC%82%BD%EC%9E%85%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [4.3 모든 사이트에서 UI가 안정적으로 작동합니다.](#43-%EB%AA%A8%EB%93%A0-%EC%82%AC%EC%9D%B4%ED%8A%B8%EC%97%90%EC%84%9C-ui%EA%B0%80-%EC%95%88%EC%A0%95%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%9E%91%EB%8F%99%ED%95%A9%EB%8B%88%EB%8B%A4)
 - [User Experience 👥](#user-experience-)
-  - [1. 변경 이력 페이지에 페이지네이션을 도입했습니다.](#1-%EB%B3%80%EA%B2%BD-%EC%9D%B4%EB%A0%A5-%ED%8E%98%EC%9D%B4%EC%A7%80%EC%97%90-%ED%8E%98%EC%9D%B4%EC%A7%80%EB%84%A4%EC%9D%B4%EC%85%98%EC%9D%84-%EB%8F%84%EC%9E%85%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [2. 같은 내용의 이력은 한 번만 저장되도록 개선했습니다.](#2-%EA%B0%99%EC%9D%80-%EB%82%B4%EC%9A%A9%EC%9D%98-%EC%9D%B4%EB%A0%A5%EC%9D%80-%ED%95%9C-%EB%B2%88%EB%A7%8C-%EC%A0%80%EC%9E%A5%EB%90%98%EB%8F%84%EB%A1%9D-%EA%B0%9C%EC%84%A0%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-  - [3. 비개발자도 쉽게 사용할 수 있도록 요소 선택 UI를 개선했습니다.](#3-%EB%B9%84%EA%B0%9C%EB%B0%9C%EC%9E%90%EB%8F%84-%EC%89%BD%EA%B2%8C-%EC%82%AC%EC%9A%A9%ED%95%A0-%EC%88%98-%EC%9E%88%EB%8F%84%EB%A1%9D-%EC%9A%94%EC%86%8C-%EC%84%A0%ED%83%9D-ui%EB%A5%BC-%EA%B0%9C%EC%84%A0%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.1 선택 가능한 상태를 시각적으로 안내했습니다.](#31-%EC%84%A0%ED%83%9D-%EA%B0%80%EB%8A%A5%ED%95%9C-%EC%83%81%ED%83%9C%EB%A5%BC-%EC%8B%9C%EA%B0%81%EC%A0%81%EC%9C%BC%EB%A1%9C-%EC%95%88%EB%82%B4%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.2 선택 완료된 요소는 눈에 띄게 강조했습니다.](#32-%EC%84%A0%ED%83%9D-%EC%99%84%EB%A3%8C%EB%90%9C-%EC%9A%94%EC%86%8C%EB%8A%94-%EB%88%88%EC%97%90-%EB%9D%84%EA%B2%8C-%EA%B0%95%EC%A1%B0%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-    - [3.3 사용자에게는 복잡한 선택자 대신 직관적인 콘텐츠 정보만 노출했습니다.](#33-%EC%82%AC%EC%9A%A9%EC%9E%90%EC%97%90%EA%B2%8C%EB%8A%94-%EB%B3%B5%EC%9E%A1%ED%95%9C-%EC%84%A0%ED%83%9D%EC%9E%90-%EB%8C%80%EC%8B%A0-%EC%A7%81%EA%B4%80%EC%A0%81%EC%9D%B8-%EC%BD%98%ED%85%90%EC%B8%A0-%EC%A0%95%EB%B3%B4%EB%A7%8C-%EB%85%B8%EC%B6%9C%ED%96%88%EC%8A%B5%EB%8B%88%EB%8B%A4)
-- [Tech Stack 🛠️](#tech-stack-%EF%B8%8F)
-  - [React + Vite](#react--vite)
-  - [Node.js + Express.js](#nodejs--expressjs)
-  - [Playwright](#playwright)
-  - [node-cron](#node-cron)
-  - [Tailwind CSS](#tailwind-css)
-- [Timeline 🗓](#timeline-) - [2025.03.31 - 2025.04.25](#20250331---20250425)
+- [Timeline 🗓](#timeline-)
 
 <!-- tocstop -->
 
@@ -140,13 +82,77 @@ JANBI는 '잔업비서'의 줄임말로 경쟁사 웹 페이지의 특정 요소
 
 </details>
 
+# Architecture 🔧
+
+![프로젝트아키텍처](./assets/프로젝트아키텍처.png)
+
+## 다양한 실행 환경을 명확히 분리하기 위해 MVVM 구조를 도입했습니다.
+
+JANBI는 content script, popup, background, options 등 실행 환경이 제각기 다른 Chrome Extension 구조로 이루어져 있습니다. 이들 간의 역할을 명확하게 구분하고 유지보수와 확장성을 높이기 위해 **MVVM(Model–View–ViewModel)** 구조를 적용했습니다.
+
+### View: 사용자와 상호작용하는 React 기반 UI 구성
+
+설정 페이지(options)와 팝업(popup)은 React + Vite 기반으로 구현했습니다. 이 UI는 사용자가 감시할 URL, 스케줄 시간, Slack 채널 등을 입력하고 관리하는 역할을 합니다. 기능은 컴포넌트 단위로 분리되어 있어 재사용성과 유지보수가 용이합니다.
+
+React의 상태 관리와 라이프사이클 훅을 활용해 로그인 상태, 로딩 처리, 사용자 피드백 등 다양한 상황에 유연하게 대응할 수 있었고 조건부 렌더링이나 상태 기반 화면 전환 역시 직관적으로 구현할 수 있었습니다.
+
+### ViewModel: 사용자 조작에 따른 비즈니스 로직 처리
+
+ViewModel은 View와 Model 사이에서 중간 역할을 하며 사용자의 입력이나 DOM 조작 같은 행위에 반응해 필요한 로직을 처리합니다.
+
+예를 들어 사용자가 웹페이지에서 DOM 요소를 클릭하면 ViewModel이 셀렉터를 계산하고 선택 여부를 토글하며 Shadow DOM 기반의 패널에 반영합니다. Slack 인증을 위한 요청 생성, 서버로의 요소 저장 등 외부 통신도 ViewModel에서 처리됩니다.
+
+이러한 흐름은 단순한 데이터 전달을 넘어서, DOM 상태 변경, 유효성 검사, 외부 API 연동 등 비즈니스 로직 전반을 아우릅니다. View와의 역할을 명확히 분리함으로써 UI는 화면 렌더링에 집중하고 모든 로직은 ViewModel에서 일관되게 관리할 수 있도록 했습니다.
+
+특히 content script에서는 DOM API (addEventListener, MutationObserver, querySelectorAll 등)를 활용해 사용자 이벤트를 바닐라 JavaScript로 처리했습니다. React의 Virtual DOM이 불필요하거나 오히려 비효율적인 영역이었기에 DOM 제어는 바닐라 JavaScript로 구현하는 것이 적합하다고 생각했습니다.
+
+### Model: 사용자 설정 정보를 저장하고 관리하는 데이터 계층
+
+Model은 사용자가 입력한 정보(감시 대상 URL, DOM 셀렉터, 알림 주기, Slack Webhook 등)를 구조화하여 관리합니다.
+이 데이터는 ViewModel의 처리 대상이자 View가 렌더링에 사용하는 원천이 되며 background script나 서버 연동 로직의 기준이 되기도 합니다.
+
+예를 들어 사용자가 요소를 선택하면 ViewModel은 해당 요소의 셀렉터와 초기 콘텐츠 값을 추출해 이를 Model에 저장하고 서버로 전달합니다. 이후 background script에서 스케줄을 등록하거나 대시보드에서 이력을 조회할 때도 이 Model 구조가 기준이 됩니다.
+
+Model은 다양한 실행 환경에서 접근되므로 중앙에서 일관되게 유지될 수 있도록 클래스로 정의하였고 일정 포맷(getFormattedSchedule, toJSON)으로 가공된 데이터를 반환할 수 있게 구성했습니다.
+
+### MVVM 흐름: 데이터와 이벤트가 오가는 구조
+
+1. 사용자가 popup에서 감시할 URL, 스케줄 시간, Slack 채널을 입력합니다.
+
+2. ViewModel이 입력값을 유효성 검사하고 구조화하여 Model에 저장합니다.
+
+3. background script는 이 정보를 기반으로 스케줄을 등록하거나 서버에 요청을 전송합니다.
+
+4. 사용자가 웹페이지에서 요소를 선택하면 content script의 ViewModel이 셀렉터를 계산하고 Model에 추가합니다.
+
+이러한 구조를 통해 JANBI는 UI는 React 기반으로 안정적으로 구성하고 실제 DOM 추적 및 데이터 흐름은 바닐라 JavaScript와 명확한 계층 분리를 통해 유연하게 관리할 수 있었습니다.
+
+## 기술 스택은 각 환경의 목적에 맞춰 선택했습니다.
+
+JANBI 익스텐션은 popup/options의 사용자 인터페이스, content script의 DOM 탐지 기능, background script의 메시지 전달 등 다양한 실행 컨텍스트를 갖고 있으며 각 역할에 최적화된 기술을 선택했습니다.
+
+### UI 영역
+
+| 기술 스택                                                                                                            | 설명                                             |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB&style=flat-square)                    | 컴포넌트 기반 UI 구성, 상태 기반 렌더링에 최적화 |
+| ![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white&style=flat-square)                        | 빠른 개발 서버 및 번들링, 효율적인 HMR 지원      |
+| ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0EA5E9?logo=tailwindcss&logoColor=white&style=flat-square) | 유틸리티 기반 스타일링으로 빠르고 일관된 UI 구성 |
+
+### Background / Content Script 영역
+
+| 기술 스택                                                                                                                     | 설명                                                          |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black&style=flat-square)               | DOM 조작, 이벤트 핸들링, 상태 추적 기능 구현                  |
+| ![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-5F6368?logo=googlechrome&logoColor=white&style=flat-square) | 메시지 전달, 탭 조작, 스크립트 삽입 등 확장 프로그램 API 활용 |
+
 # Development 💻
 
 ## 1. 왜 익스텐션이어야 했을까?
 
 초기에는 사용자가 입력한 URL을 팝업 창으로 띄우거나 iframe에 삽입해 DOM 요소를 선택하도록 하는 방식을 고민했습니다. 하지만 현실적인 브라우저 보안 정책과 기술적인 제약으로 인해 이 접근은 불가능했습니다.
 
-### 1.1 팝업으로는 외부 페이지의 DOM에 접근할 수 없습니다.
+### 1.1 팝업으로는 사용자 지정 웹사이트의 DOM에 접근할 수 없습니다.
 
 **팝업은 동일한 페이지를 띄워도 외부 창이기 때문에 현재 앱과 DOM을 공유할 수 없었습니다.**<br>
 초기에는 사용자가 입력한 URL을 `window.open()` 으로 새 창으로 띄우고 그 안에서 요소를 선택하는 방식으로 구현을 고려했습니다. 하지만 이 접근은 기술적인 제약이 있었습니다.
@@ -179,7 +185,7 @@ Same-Origin Policy는 다음 중 하나라도 다르면 접근이 불가능합�
 이를 위해 `window.postMessage()`로 통신을 시도하거나 스크립트를 삽입해 클릭 이벤트를 감지하려 했지만 대부분의 외부 사이트는 **Content Security Policy(CSP)** 로 인해 스크립트 삽입을 차단합니다.<br>
 결과적으로 팝업 방식은 사용자 행동을 추적하거나 DOM 값을 전달받을 수 없다는 한계가 있었습니다.
 
-### 1.2 iframe 또한 브라우저 보안 정책으로 인해 대부분의 외부 페이지를 삽입할 수 없습니다.
+### 1.2 iframe 또한 브라우저 보안 정책으로 인해 대부분의 타 사이트 페이지를 삽입할 수 없습니다.
 
 처음에는 외부 웹사이트를 iframe으로 JANBI 페이지에 삽입한 뒤 그 안에서 DOM 요소를 직접 클릭하거나 추적하는 방식도 고려했습니다. 하지만 iframe 방식은 브라우저 보안 정책에 의해 Naver, Google, Instagram 등과 같은 주요 웹사이트에서 차단되며 DOM 접근 또한 불가능하다는 문제점이 있었습니다.
 
@@ -211,13 +217,13 @@ iframe 삽입을 허용한 사이트가 있더라도 팝업에서 DOM 접근에 
 Uncaught DOMException: Blocked a frame with origin "도메인" from accessing a cross-origin frame.
 ```
 
-iframe으로 외부 페이지를 불러와도 해당 페이지의 DOM에 접근해 요소를 추적하거나 클릭 이벤트를 감지하는 것은 불가능했습니다.
+iframe으로 사용자가 지정한 웹사이트를 불러와도 해당 페이지의 DOM에 접근해 요소를 추적하거나 클릭 이벤트를 감지하는 것은 불가능했습니다.
 
 ### 1.3 그래서 Chrome 익스텐션을 선택했습니다.
 
 ![익스텐션패널](./assets/패널.png)
 
-위의 두 방식 모두 브라우저 보안 정책에 막혀 외부 페이지의 DOM을 분석하거나 조작하는 기능을 구현할 수 없었습니다.<br>
+위의 두 방식 모두 브라우저 보안 정책에 막혀 사용자가 지정한 웹사이트의 DOM을 분석하거나 조작하는 기능을 구현할 수 없었습니다.<br>
 반면, Chrome 익스텐션은 Content Script를 통해 외부 웹사이트에 직접 주입되어 DOM에 접근할 수 있으며, UI 삽입, 요소 추적, 이벤트 리스닝 등이 가능했습니다.<br>
 JANBI는 이 구조를 기반으로 사용자가 마우스로 클릭한 요소를 추적하고 스케줄에 따라 이를 분석하며 변경된 경우 Slack 알림을 보내는 전체 흐름을 구현할 수 있었습니다.<br>
 
@@ -442,34 +448,46 @@ cron.schedule("0 10 * * 1", () => {
 
 JANBI에서는 요일, 시간 값을 기준으로 동적으로 크론 표현식을 생성해 스케줄을 등록합니다.
 
-### 5.3 서버 재시작 시 스케줄이 초기화되는 문제가 있었습니다.
+## 6. 향후에는 Redis와 메시지 큐로 구조를 개선할 계획입니다.
 
-이 방식은 현재 단일 서버로 운영되는 제 프로젝트에서는 충분히 작동하지만 한계도 있었습니다.
+현재 JANBI는 스케줄링 전용 서버에서 `node-cron`을 사용해 사용자가 설정한 시간에 맞춰 작업을 자동으로 실행하고 있습니다.<br>
+스케줄링 서버는 예약된 시간마다 스크래핑 서버를 호출하고 지정된 웹페이지의 요소를 분석해 변경 여부를 판단합니다.
+
+이 구조는 단순하고 반복적인 작업에는 안정적으로 동작하지만 서비스가 확장되면 다음과 같은 문제가 발생합니다.
 
 - 서버 재시작 시 스케줄 초기화
-  이를 보완하기 위해 부팅 시 DB에서 스케줄을 다시 불러오는 `initializeSchedule()`을 구현했습니다.
+  이를 보완하기 위해 서버 부팅 시 DB에서 스케줄을 다시 불러오는 `initializeSchedule()`을 구현했습니다.
 - 수평 확장 어려움
   서버를 여러 대로 늘릴 경우 중복 실행이 발생할 수 있습니다.
 - 복잡한 일정 처리 불가
   공휴일 제외, 10분 간격 반복 등 유연한 일정 처리는 어렵습니다.
+- 장기적으로 예약 작업의 수가 많아지면 스케줄 관리 어려움
 
-### 5.4 향후에는 Redis와 큐 시스템으로 구조 개선 예정입니다.
+이런 문제를 해결하기 위해 Redis + 메시지 큐 기반 구조로 전환을 고려하고 있습니다.
 
-Redis + 메시지 큐 구조로 개선할 수 있다고 생각했습니다.
+### 6.1 구조 전환 시 작업 흐름은 이렇게 바뀝니다.
 
-1. 사용자가 URL, 알림 시간, Slack 채널을 등록하면 서버는 이 정보를 Redis에 저장합니다.
+![레디스큐 예시 이미지](./assets/레디스큐이미지.png)
+
+1. 사용자가 URL, 알림 시간, Slack 채널을 등록하면 API 서버는 이 정보를 Redis에 저장합니다.
 2. 동시에 메시지 큐(Bull 등)에 작업이 등록되고 지정된 시간에 실행될 준비를 합니다.
-3. 시간이 되면 큐가 작업을 실행해 페이지를 분석하고 변경사항이 있다면 Slack으로 알립니다.
+3. 등록된 시간이 되면 큐가 작업을 실행하고 스크래핑 서버를 통해 실제 DOM 요소를 분석하여 변경 여부를 감지합니다.
+4. 사용자의 Slack으로 알림을 전송합니다.
 
-이 방식은 서버가 여러 대일 경우에도 작업 중복 없이 안정적으로 처리할 수 있고, 공휴일 제외, 시간대별 반복 등 다양한 조건을 유연하게 반영할 수 있습니다.
+이 방식은 서버가 여러 대일 경우에도 중복 없이 안정적으로 실행되며 공휴일 제외, 특정 요일 반복, 10분 단위 실행 등 복잡한 스케줄 조건도 유연하게 처리할 수 있습니다.
 
-현재 JANBI는 단순하고 반복적인 작업이 중심이기 때문에 node-cron 기반으로 충분히 작동합니다.
+### 6.2 수평 확장성과 유연한 스케줄링 두 가지를 모두 해결합니다.
 
-서비스가 확장되면 안정성과 유연성을 고려해 장기적으로는 Redis + 메시지 큐 기반 구조로 확장할 계획입니다.
+- 서버가 여러 대여도 안정적인 실행
+  => 여러 인스턴스가 실행되더라도 동일 작업이 중복 실행되지 않아 확장성에 유리합니다.
+- 복잡한 조건도 유연하게 대응 가능
+  => 공휴일 제외, 특정 요일 반복, 10분 단위 실행 등 다양한 스케줄을 지원할 수 있습니다.
+
+현재는 `node-cron` 기반 스케줄링 서버만으로도 충분히 안정적으로 작동하고 있지만 서비스가 커질수록 구조적 유연성과 안정성을 위해 메시지 큐 기반의 아키텍처로 전환이 필요하다고 판단했습니다.
 
 # Trouble Shooting 👾
 
-## 1. CSR 페이지에서 요소 탐색이 실패했던 이유와 Playwright로의 전환
+## 1. CSR 페이지에서 요소 감지에 실패해 Playwright로 전환했습니다.
 
 CSR(Client-Side Rendering) 기반 웹사이트는 JavaScript가 실행된 후에야 실제 DOM 요소들이 만들어지기 때문에 초기 HTML에는 원하는 데이터가 포함되어 있지 않습니다.<br>
 이로 인해 정적 HTML만 처리하는 도구인 Cheerio로는 애초에 해당 요소를 탐색할 수 없는 구조적 한계가 있었습니다.
@@ -554,7 +572,7 @@ if (await locator.isVisible()) {
 
 이로써 CSR 페이지에서도 안정적으로 요소를 탐색하고 변경 여부를 정확하게 판단할 수 있게 되었습니다.
 
-## 2. 외부 페이지에서 URL 저장이 되지 않았습니다.
+## 2. 사용자 지정 웹사이트에서 URL 저장이 되지 않았습니다.
 
 JANBI는 사용자가 방문 중인 웹페이지 위에서 특정 요소를 클릭하면 그 정보를 서버에 저장해 추후 변경을 감지합니다.<br>
 하지만 이 기능이 동작하지 않는 문제가 있었고 원인은 `CORS(Cross-Origin Resource Sharing)` 정책 때문이었습니다.
@@ -725,7 +743,7 @@ UI가 일부 웹 사이트에서 깨져 보이는 문제는 대부분 외부 스
 
 #### 1) 스타일도 Shadow DOM 내부에 삽입했습니다.
 
-처음엔 Tailwind 클래스만 사용했는데 외부 페이지 CSS에 덮여버리는 경우가 많아서 Shadow DOM 내부에 `<style>` 태그를 직접 삽입해서 스타일을 보호했습니다.
+처음엔 Tailwind 클래스만 사용했지만 사용자가 지정한 웹사이트의 CSS에 덮여버리는 경우가 많아 Shadow DOM 내부에 `<style>` 태그를 직접 삽입해서 스타일을 보호했습니다.
 
 ```
 const style = document.createElement("style");
@@ -829,43 +847,6 @@ JANBI는 일정한 시간마다 웹 페이지의 요소를 확인합니다. 예�
 | 적용 전                        | 적용 후                        |
 | ------------------------------ | ------------------------------ |
 | ![요소전](./assets/요소전.gif) | ![요소후](./assets/요소후.gif) |
-
-# Tech Stack 🛠️
-
-| **Category**  | **Tech Stack**                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Language**  | ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)                                                                                                                                                                                                                                                                                                                           |
-| **Frontend**  | ![React](https://img.shields.io/badge/React-20232a?style=for-the-badge&logo=react&logoColor=61DAFB) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)                                                                                                                                                                                                                                         |
-| **Backend**   | ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white) ![Playwright](https://img.shields.io/badge/Playwright-2EAD33?style=for-the-badge&logo=microsoft&logoColor=white) |
-| **Library**   | ![Mongoose](https://img.shields.io/badge/Mongoose-880000?style=for-the-badge&logo=mongoose&logoColor=white) ![node-cron](https://img.shields.io/badge/node--cron-333333?style=for-the-badge&logo=nodedotjs&logoColor=white)                                                                                                                                                                                                                 |
-| **CSS**       | ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-38BDF8?style=for-the-badge&logo=tailwind-css&logoColor=white)                                                                                                                                                                                                                                                                                                                       |
-| **Dev Tools** | ![ESLint](https://img.shields.io/badge/ESLint-4B32C3?style=for-the-badge&logo=eslint&logoColor=white) ![Prettier](https://img.shields.io/badge/Prettier-F7B93E?style=for-the-badge&logo=prettier&logoColor=black)                                                                                                                                                                                                                           |
-| **Platforms** | ![Chrome Extension](https://img.shields.io/badge/Chrome_Extension-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white) ![Slack](https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=slack&logoColor=white)                                                                                                                                                                                                          |
-
-### React + Vite
-
-- 빠른 HMR과 모듈 번들링 덕분에 대시보드 UI 개발에 최적화되어 있습니다.
-- 컴포넌트 기반 UI 구현을 위해 React를 사용했습니다.
-
-### Node.js + Express.js
-
-- 비동기 I/O에 적합한 구조로 웹 스크래핑 및 Slack 알림 처리를 담당합니다.
-- RESTful API 서버 구성에 Express를 사용했습니다.
-
-### Playwright
-
-- CSR 기반 페이지도 실제 렌더링을 통해 정확하게 요소를 탐지할 수 있습니다.
-- `waitUntil`, `waitFor`, `isVisible` 등으로 DOM 상태를 정밀하게 제어할 수 있습니다.
-
-### node-cron
-
-- 간단한 크론 표현식으로 작업 스케줄을 손쉽게 설정할 수 있습니다.
-- 단순하고 반복적인 시간 기반 작업에 최적화되어있습니다.
-
-### Tailwind CSS
-
-- JIT 컴파일 기반으로 빠른 스타일링과 빌드가 가능합니다.
-- 클래스만으로 빠른 UI 구현이 가능하고 기존 사용 경험으로 러닝커브가 낮습니다.
 
 # Timeline 🗓
 
