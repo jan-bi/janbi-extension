@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "JANBI",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "주기적으로 보고싶은 웹 페이지의 URL을 등록하고 알림받아보세요.",
   "action": {
     "default_popup": "src/popup/index.html"
